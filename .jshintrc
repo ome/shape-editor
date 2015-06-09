@@ -11,5 +11,4 @@
   "noarg": true,
   "strict": false,
   "undef": true,
-  "predef" : ["Raphael"]
 }

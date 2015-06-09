@@ -2,10 +2,13 @@
 
 module.exports = function(grunt) {
 
+    var sources = [
+        "src/js/shapeEditor.js"
+    ];
+
     grunt.initConfig({
         clean: {
             dist: [
-                'index.html',
                 'dist/css',
                 'dist/js/*.js'
             ]
@@ -22,8 +25,9 @@ module.exports = function(grunt) {
         concat: {
             options: {
                 banner: "//! Built on <%= grunt.template.today('yyyy-mm-dd') %>\n" +
-                    "//! GPL License. www.openmicroscopy.org",
-                process: true
+                    "//! GPL License. www.openmicroscopy.org\n\n",
+                process: true,
+                stripBanners: true,
             },
             dist: {
                 src:  [ "<banner>" ].concat(sources),

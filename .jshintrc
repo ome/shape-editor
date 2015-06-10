@@ -10,5 +10,5 @@
   "latedef": true,
   "noarg": true,
   "strict": false,
-  "undef": true,
+  "undef": true
 }

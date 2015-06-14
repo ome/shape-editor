@@ -3,7 +3,8 @@
 module.exports = function(grunt) {
 
     var sources = [
-        "src/js/shapeEditor.js"
+        "src/js/shapes/line.js",
+        "src/js/shapeManager.js"
     ];
 
     grunt.initConfig({
@@ -36,7 +37,7 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            files: [ "src/js/*.js" ],
+            files: [ "src/js/*.js",  "src/js/**/*.js"],
             tasks: ["jshint", "concat"]
         }
     });

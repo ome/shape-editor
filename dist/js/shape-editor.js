@@ -6,11 +6,37 @@
 /* globals Raphael: false */
 /* globals console: false */
 
-var ShapeEditor = function ShapeEditor(elementId, width, height, options) {
+var Line = function Line() {
 
-	this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
+
+};
+
+
+var CreateLine = function CreateLine(options) {
+
+	this.paper = options.paper;
+	this.manager = options.manager;
+};
+
+CreateLine.prototype.startDrag = function startDrag() {
+
+	console.log('CreateLine.startDrag', this, arguments);
+	this.line = new Line();
+};
+
+/* globals Raphael: false */
+/* globals CreateLine: false */
+/* globals console: false */
+
+var ShapeManager = function ShapeManager(elementId, width, height, options) {
+
+    var self = this;
+    this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
+
+    // Store all the shapes we create
+    this.shapes = [];
 
     // Add a full-size background to cover existing shapes while
     // we're creating new shapes, to stop them being selected.
@@ -19,11 +45,36 @@ var ShapeEditor = function ShapeEditor(elementId, width, height, options) {
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
                           'cursor': 'crosshair'});
+    this.newShapeBg.drag(this.drag,
+        function(){
+            self.startDrag.apply(self, arguments);
+        },
+        this.stopDrag);
+
+    this.createShape = new CreateLine({'shapeManager': this, 'paper': this.paper});
 };
 
 
-ShapeEditor.prototype.setState = function setState(state) {
-	if (this.STATES.indexOf(state) === -1) {
+ShapeManager.prototype.startDrag = function startDrag(){
+    console.log('startDrag', this, arguments);
+    // clear any existing selected shapes
+    // this.deselectShapes()
+    // create a new shape using the current toolbar color
+    this.createShape.startDrag(arguments);
+
+};
+
+ShapeManager.prototype.drag = function drag(){
+    console.log('drag', this, arguments);
+};
+
+ShapeManager.prototype.stopDrag = function stopDrag(){
+    console.log('stopDrag', this, arguments);
+};
+
+
+ShapeManager.prototype.setState = function setState(state) {
+    if (this.STATES.indexOf(state) === -1) {
         console.log("Invalid state: ", state, "Needs to be in", this.STATES);
         return;
     }
@@ -37,6 +88,6 @@ ShapeEditor.prototype.setState = function setState(state) {
     this.state = state;
 };
 
-ShapeEditor.prototype.getState = function getState() {
+ShapeManager.prototype.getState = function getState() {
     return this.state;
 };

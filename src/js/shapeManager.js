@@ -18,13 +18,26 @@
 */
 
 /* globals Raphael: false */
+/* globals CreateLine: false */
 /* globals console: false */
 
-var ShapeEditor = function ShapeEditor(elementId, width, height, options) {
+var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
-	this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
+    var self = this;
+
+    // Keep track of state, color etc
+    this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
+    this._state = "SELECT";
+    this._color = "ff0000";
+
+    // jQuery element used for .offset() etc.
+    this.$el = $("#" + elementId);
+
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
+
+    // Store all the shapes we create
+    this.shapes = [];
 
     // Add a full-size background to cover existing shapes while
     // we're creating new shapes, to stop them being selected.
@@ -33,11 +46,43 @@ var ShapeEditor = function ShapeEditor(elementId, width, height, options) {
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
                           'cursor': 'crosshair'});
+    this.newShapeBg.drag(this.drag,
+        function(){
+            self.startDrag.apply(self, arguments);
+        },
+        this.stopDrag);
+
+    this.createShape = new CreateLine({'shapeManager': this, 'paper': this.paper});
 };
 
 
-ShapeEditor.prototype.setState = function setState(state) {
-	if (this.STATES.indexOf(state) === -1) {
+ShapeManager.prototype.startDrag = function startDrag(x, y, event){
+    console.log('startDrag', this, arguments);
+    // clear any existing selected shapes
+    // this.deselectShapes()
+
+    // create a new shape with X and Y
+    // createShape helper can get other details itself
+    var offset = this.$el.offset(),
+        startX = x - offset.left,
+        startY = y - offset.top;
+
+    this.createShape.startDrag(startX, startY);
+};
+
+ShapeManager.prototype.drag = function drag(){
+    console.log('drag', this, arguments);
+    this.createShape.drag(arguments);
+};
+
+ShapeManager.prototype.stopDrag = function stopDrag(){
+    console.log('stopDrag', this, arguments);
+    this.createShape.stopDrag(arguments);
+};
+
+
+ShapeManager.prototype.setState = function setState(state) {
+    if (this.STATES.indexOf(state) === -1) {
         console.log("Invalid state: ", state, "Needs to be in", this.STATES);
         return;
     }
@@ -48,9 +93,13 @@ ShapeEditor.prototype.setState = function setState(state) {
     } else {
         this.newShapeBg.hide();
     }
-    this.state = state;
+    this._state = state;
 };
 
-ShapeEditor.prototype.getState = function getState() {
-    return this.state;
+ShapeManager.prototype.getState = function getState() {
+    return this._state;
+};
+
+ShapeManager.prototype.getColor = function getColor() {
+    return this._color;
 };

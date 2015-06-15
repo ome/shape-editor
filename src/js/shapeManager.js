@@ -37,7 +37,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.paper = Raphael(elementId, width, height);
 
     // Store all the shapes we create
-    this.shapes = [];
+    this._shapes = [];
 
     // Add a full-size background to cover existing shapes while
     // we're creating new shapes, to stop them being selected.
@@ -46,15 +46,19 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
                           'cursor': 'crosshair'});
-    this.newShapeBg.drag(this.drag,
+    this.newShapeBg.drag(
+        function(){
+            self.drag.apply(self, arguments);
+        },
         function(){
             self.startDrag.apply(self, arguments);
         },
-        this.stopDrag);
+        function(){
+            self.stopDrag.apply(self, arguments);
+        });
 
-    this.createShape = new CreateLine({'shapeManager': this, 'paper': this.paper});
+    this.createShape = new CreateLine({'manager': this, 'paper': this.paper});
 };
-
 
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){
     console.log('startDrag', this, arguments);
@@ -70,16 +74,16 @@ ShapeManager.prototype.startDrag = function startDrag(x, y, event){
     this.createShape.startDrag(startX, startY);
 };
 
-ShapeManager.prototype.drag = function drag(){
-    console.log('drag', this, arguments);
-    this.createShape.drag(arguments);
+ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
+    var offset = this.$el.offset(),
+        dragX = x - offset.left,
+        dragY = y - offset.top;
+    this.createShape.drag(dragX, dragY);
 };
 
 ShapeManager.prototype.stopDrag = function stopDrag(){
-    console.log('stopDrag', this, arguments);
-    this.createShape.stopDrag(arguments);
+    this.createShape.stopDrag();
 };
-
 
 ShapeManager.prototype.setState = function setState(state) {
     if (this.STATES.indexOf(state) === -1) {
@@ -102,4 +106,8 @@ ShapeManager.prototype.getState = function getState() {
 
 ShapeManager.prototype.getColor = function getColor() {
     return this._color;
+};
+
+ShapeManager.prototype.addShape = function addShape(shape) {
+    this._shapes.push(shape);
 };

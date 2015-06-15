@@ -65,8 +65,7 @@ Line.prototype.drawShape = function drawShape() {
 
 
 
-
-
+// Class for creating Lines.
 var CreateLine = function CreateLine(options) {
 
     this.paper = options.paper;

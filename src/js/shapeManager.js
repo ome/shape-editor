@@ -18,7 +18,7 @@
 */
 
 /* globals Raphael: false */
-/* globals CreateLine: false */
+/* globals CreateRect: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -57,7 +57,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
             self.stopDrag.apply(self, arguments);
         });
 
-    this.createShape = new CreateLine({'manager': this, 'paper': this.paper});
+    this.createShape = new CreateRect({'manager': this, 'paper': this.paper});
 };
 
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){

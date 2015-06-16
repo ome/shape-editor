@@ -8,6 +8,12 @@ $(function() {
 
     // set state depending on what we want to do,
     // for example to create Rectangle
+
+    $("input[name='state']").click(function(){
+        var state = $(this).val();
+        shapeManager.setState(state);
+    });
+
     shapeManager.setState("RECT");
 
     console.log("getState", shapeManager.getState());

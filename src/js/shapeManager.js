@@ -19,6 +19,7 @@
 
 /* globals Raphael: false */
 /* globals CreateRect: false */
+/* globals CreateLine: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -57,7 +58,12 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
             self.stopDrag.apply(self, arguments);
         });
 
-    this.createShape = new CreateRect({'manager': this, 'paper': this.paper});
+    this.shapeFactories = {
+        "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
+        "LINE": new CreateLine({'manager': this, 'paper': this.paper})
+    };
+
+    this.createShape = this.shapeFactories.LINE;
 };
 
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){
@@ -94,6 +100,10 @@ ShapeManager.prototype.setState = function setState(state) {
     var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE"];
     if (shapes.indexOf(state) > -1) {
         this.newShapeBg.show().toFront();
+
+        if (this.shapeFactories[state]) {
+            this.createShape = this.shapeFactories[state];
+        }
     } else {
         this.newShapeBg.hide();
     }

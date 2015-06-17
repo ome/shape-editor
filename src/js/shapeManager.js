@@ -78,6 +78,9 @@ ShapeManager.prototype.startDrag = function startDrag(x, y, event){
         startY = y - offset.top;
 
     this.createShape.startDrag(startX, startY);
+
+    // Move this in front of new shape so that drag events don't get lost to the new shape
+    this.newShapeBg.toFront();
 };
 
 ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){

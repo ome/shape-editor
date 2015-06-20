@@ -31,6 +31,7 @@ var Rect = function Rect(options) {
     this._color = options.color;
     this._lineWidth = options.lineWidth || 2;
     this._selected = false;
+    this.handle_wh = 6;
 
     this.element = this.paper.rect();
     this.element.attr({'fill-opacity': 0.01, 'fill': '#fff'});
@@ -58,7 +59,8 @@ var Rect = function Rect(options) {
         }
     );
 
-    // TODO: setup drag handling etc.
+    this.createHandles();
+
     this.drawShape();
 };
 
@@ -92,10 +94,150 @@ Rect.prototype.drawShape = function drawShape() {
 
     if (this.isSelected()) {
         this.element.toFront();
-        // this.handles.show().toFront();
+        this.handles.show().toFront();
     } else {
-        // this.handles.hide();
+        this.handles.hide();
     }
+
+    // update Handles
+    var handleIds = this.getHandleCoords();
+    var hnd, h_id, hx, hy;
+    for (var h=0, l=this.handles.length; h<l; h++) {
+        hnd = this.handles[h];
+        h_id = hnd.h_id;
+        hx = handleIds[h_id][0];
+        hy = handleIds[h_id][1];
+        hnd.attr({'x':hx-this.handle_wh/2, 'y':hy-this.handle_wh/2});
+    }
+};
+
+Rect.prototype.getHandleCoords = function getHandleCoords() {
+
+    var handleIds = {'nw': [this._x, this._y],
+        'n': [this._x+this._width/2,this._y],
+        'ne': [this._x+this._width,this._y],
+        'w': [this._x, this._y+this._height/2],
+        'e': [this._x+this._width, this._y+this._height/2],
+        'sw': [this._x, this._y+this._height],
+        's': [this._x+this._width/2, this._y+this._height],
+        'se': [this._x+this._width, this._y+this._height]};
+    return handleIds;
+};
+
+// ---- Create Handles -----
+Rect.prototype.createHandles = function createHandles() {
+
+    var self = this,
+        handle_attrs = {'stroke': '#4b80f9',
+                        'fill': '#fff',
+                        'cursor': 'default',
+                        'fill-opacity': 1.0};
+
+    // map of centre-points for each handle
+    var handleIds = this.getHandleCoords();
+
+    // draw handles
+    self.handles = this.paper.set();
+    var _handle_drag = function() {
+        return function (dx, dy, mouseX, mouseY, event) {
+
+            // If drag on corner handle, retain aspect ratio. dx/dy = aspect
+            var keep_ratio = self.fixed_ratio || event.shiftKey;
+            if (keep_ratio && this.h_id.length === 2) {     // E.g. handle is corner 'ne' etc
+                if (this.h_id === 'se' || this.h_id === 'nw') {
+                    if (Math.abs(dx/dy) > this.aspect) {
+                        dy = dx/this.aspect;
+                    } else {
+                        dx = dy*this.aspect;
+                    }
+                } else {
+                    if (Math.abs(dx/dy) > this.aspect) {
+                        dy = -dx/this.aspect;
+                    } else {
+                        dx = -dy*this.aspect;
+                    }
+                }
+            }
+            // Use dx & dy to update the location of the handle and the corresponding point of the parent
+            var new_x = this.ox + dx;
+            var new_y = this.oy + dy;
+            var newRect = {
+                x: self._x,
+                y: self._y,
+                width: self._width,
+                height: self._height
+            };
+            if (this.h_id.indexOf('e') > -1) {    // if we're dragging an 'EAST' handle, update width
+                newRect.width = new_x - self._x + self.handle_wh/2;
+            }
+            if (this.h_id.indexOf('s') > -1) {    // if we're dragging an 'SOUTH' handle, update height
+                newRect.height = new_y - self._y + self.handle_wh/2;
+            }
+            if (this.h_id.indexOf('n') > -1) {    // if we're dragging an 'NORTH' handle, update y and height
+                newRect.y = new_y + self.handle_wh/2;
+                newRect.height = this.obottom - new_y;
+            }
+            if (this.h_id.indexOf('w') > -1) {    // if we're dragging an 'WEST' handle, update x and width
+                newRect.x = new_x + self.handle_wh/2;
+                newRect.width = this.oright - new_x;
+            }
+            // Don't allow zero sized rect.
+            if (newRect.width < 1 || newRect.height < 1) {
+                return false;
+            }
+
+            self._x = newRect.x;
+            self._y = newRect.y;
+            self._width = newRect.width;
+            self._height = newRect.height;
+            self.drawShape();
+            return false;
+        };
+    };
+    var _handle_drag_start = function() {
+        return function () {
+            if (self.disable_handles) {
+                return false;
+            }
+            // START drag: simply note the location we started
+            this.ox = this.attr("x");  // + self.handle_wh/2;
+            this.oy = this.attr("y");  // + self.handle_wh/2;
+            this.oright = self._width + this.ox;
+            this.obottom = self._height + this.oy;
+            this.aspect = self._width / self._height;
+            return false;
+        };
+    };
+    var _handle_drag_end = function() {
+        return function() {
+            if (self.disable_handles) {
+                return false;
+            }
+            // this.rect.model.trigger('drag_resize_stop', [this.rect.x, this.rect.y,
+            //     this.rect.width, this.rect.height]);
+            return false;
+        };
+    };
+    // var _stop_event_propagation = function(e) {
+    //     e.stopImmediatePropagation();
+    // }
+    for (var key in handleIds) {
+        var hx = handleIds[key][0];
+        var hy = handleIds[key][1];
+        var handle = this.paper.rect(hx-self.handle_wh/2, hy-self.handle_wh/2, self.handle_wh, self.handle_wh).attr(handle_attrs);
+        handle.attr({'cursor': key + '-resize'});     // css, E.g. ne-resize
+        handle.h_id = key;
+        handle.rect = self;
+
+        handle.drag(
+            _handle_drag(),
+            _handle_drag_start(),
+            _handle_drag_end()
+        );
+        // handle.mousedown(_stop_event_propagation);
+        self.handles.push(handle);
+    }
+    self.handles.hide();     // show on selection
 };
 
 

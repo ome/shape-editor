@@ -50,6 +50,11 @@ Line.prototype.drawShape = function drawShape() {
                        'stroke-width': lineW});
 };
 
+Line.prototype.setSelected = function setSelected(selected) {
+    this._selected = !!selected;
+    this.drawShape();
+};
+
 
 
 // Class for creating Lines.
@@ -83,6 +88,7 @@ CreateLine.prototype.drag = function drag(dragX, dragY) {
 
 CreateLine.prototype.stopDrag = function stopDrag() {
 
+    this.line.setSelected(true);
     this.manager.addShape(this.line);
 };
 
@@ -134,8 +140,8 @@ var Rect = function Rect(options) {
     this.drawShape();
 };
 
-Rect.prototype.setSelected = function setSelected() {
-    this._selected = true;
+Rect.prototype.setSelected = function setSelected(selected) {
+    this._selected = !!selected;
     this.drawShape();
 };
 
@@ -351,7 +357,7 @@ CreateRect.prototype.drag = function drag(dragX, dragY) {
 
 CreateRect.prototype.stopDrag = function stopDrag() {
 
-    this.rect.setSelected();
+    this.rect.setSelected(true);
     this.manager.addShape(this.rect);
 };
 
@@ -407,7 +413,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){
     console.log('startDrag', this, arguments);
     // clear any existing selected shapes
-    // this.deselectShapes()
+    this.clearSelected();
 
     // create a new shape with X and Y
     // createShape helper can get other details itself
@@ -461,4 +467,10 @@ ShapeManager.prototype.getColor = function getColor() {
 
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+};
+
+ShapeManager.prototype.clearSelected = function clearSelected() {
+    for (var i=0; i<this._shapes.length; i++) {
+        this._shapes[i].setSelected(false);
+    }
 };

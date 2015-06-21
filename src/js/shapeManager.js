@@ -69,7 +69,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){
     console.log('startDrag', this, arguments);
     // clear any existing selected shapes
-    // this.deselectShapes()
+    this.clearSelected();
 
     // create a new shape with X and Y
     // createShape helper can get other details itself
@@ -123,4 +123,10 @@ ShapeManager.prototype.getColor = function getColor() {
 
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+};
+
+ShapeManager.prototype.clearSelected = function clearSelected() {
+    for (var i=0; i<this._shapes.length; i++) {
+        this._shapes[i].setSelected(false);
+    }
 };

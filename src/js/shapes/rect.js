@@ -64,8 +64,8 @@ var Rect = function Rect(options) {
     this.drawShape();
 };
 
-Rect.prototype.setSelected = function setSelected() {
-    this._selected = true;
+Rect.prototype.setSelected = function setSelected(selected) {
+    this._selected = !!selected;
     this.drawShape();
 };
 
@@ -281,6 +281,6 @@ CreateRect.prototype.drag = function drag(dragX, dragY) {
 
 CreateRect.prototype.stopDrag = function stopDrag() {
 
-    this.rect.setSelected();
+    this.rect.setSelected(true);
     this.manager.addShape(this.rect);
 };

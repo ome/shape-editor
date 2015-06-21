@@ -63,6 +63,11 @@ Line.prototype.drawShape = function drawShape() {
                        'stroke-width': lineW});
 };
 
+Line.prototype.setSelected = function setSelected(selected) {
+    this._selected = !!selected;
+    this.drawShape();
+};
+
 
 
 // Class for creating Lines.
@@ -96,5 +101,6 @@ CreateLine.prototype.drag = function drag(dragX, dragY) {
 
 CreateLine.prototype.stopDrag = function stopDrag() {
 
+    this.line.setSelected(true);
     this.manager.addShape(this.line);
 };

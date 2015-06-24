@@ -21,6 +21,7 @@
 
 var Line = function Line(options) {
 
+    var self = this;
     this.paper = options.paper;
 
     this._x1 = options.x1;
@@ -215,7 +216,7 @@ var Arrow = function Arrow(options) {
             arrowPoint2x = x2 + (f * Math.sin(lineAngle + 0.4) * headSize),
             arrowPoint2y = y2 + (f * Math.cos(lineAngle + 0.4) * headSize);
 
-        // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'  
+        // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'
         // and 'fill' is not from a head corner to the start of arrow.
         var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
         arrowPath = arrowPath + "L" + this._x2 + " " + this._y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + this._x2 + " " + this._y2;
@@ -238,8 +239,6 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
     var color = this.manager.getColor();
     // Also need to get lineWidth and zoom/size etc.
-    console.log("CreateLine", this.manager);
-    console.log('CreateLine.startDrag', color, startX, startY);
 
     this.line = new Line({
         'paper': this.paper,
@@ -269,8 +268,6 @@ var CreateArrow = function CreateArrow(options) {
     that.startDrag = function startDrag(startX, startY) {
         var color = this.manager.getColor();
         // Also need to get lineWidth and zoom/size etc.
-        console.log("CreateLine", this.manager);
-        console.log('CreateLine.startDrag', color, startX, startY);
 
         this.line = new Arrow({
             'paper': this.paper,

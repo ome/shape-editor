@@ -179,31 +179,40 @@ Line.prototype.getHandleCoords = function getHandleCoords() {
     };
 };
 
-// Line.prototype.updateHandle = function updateHandle(handleId, x, y) {
-//     var h = this.handleIds[handleId];
-//     // middle handle is 'drag', so update all
-//     if (handleId == 'middle') {
-//         var dx = x - h.x;
-//         var dy = y - h.y;
-//         this.handleIds.start.x += dx;
-//         this.handleIds.start.y += dy;
-//         this.handleIds.end.x += dx;
-//         this.handleIds.end.y += dy;
-//     } else {
-//         h.x = x;
-//         h.y = y;
-//     }
-//     this.updateShapeFromHandles();
-// };
 
-//     updateShapeFromHandles: function() {
-//         var hh = this.handleIds;
-//         this.x1 = hh.start.x,
-//         this.y1 = hh.start.y,
-//         this.x2 = hh.end.x,
-//         this.y2 = hh.end.y;
-//         this.updateShape();
-//     },
+
+var Arrow = function Arrow(options) {
+
+    var that = new Line(options);
+
+    that.getPath = function getPath() {
+
+        var headSize = (this._lineWidth * 3) + 9,
+            x2 = this._x2,
+            y2 = this._y2,
+            dx = x2 - this._x1,
+            dy = y2 - this._y1;
+
+        var linePath = "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
+        var lineAngle = Math.atan(dx / dy);
+        var f = (dy < 0 ? 1 : -1);
+
+        // Angle of arrow head is 0.8 radians (0.4 either side of lineAngle)
+        var arrowPoint1x = x2 + (f * Math.sin(lineAngle - 0.4) * headSize),
+            arrowPoint1y = y2 + (f * Math.cos(lineAngle - 0.4) * headSize),
+            arrowPoint2x = x2 + (f * Math.sin(lineAngle + 0.4) * headSize),
+            arrowPoint2y = y2 + (f * Math.cos(lineAngle + 0.4) * headSize);
+
+        // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'
+        // and 'fill' is not from a head corner to the start of arrow.
+        var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
+        arrowPath = arrowPath + "L" + this._x2 + " " + this._y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + this._x2 + " " + this._y2;
+        return arrowPath;
+    };
+
+    return that;
+};
+
 
 
 // Class for creating Lines.
@@ -217,8 +226,6 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
     var color = this.manager.getColor();
     // Also need to get lineWidth and zoom/size etc.
-    console.log("CreateLine", this.manager);
-    console.log('CreateLine.startDrag', color, startX, startY);
 
     this.line = new Line({
         'paper': this.paper,
@@ -238,6 +245,27 @@ CreateLine.prototype.stopDrag = function stopDrag() {
 
     this.line.setSelected(true);
     this.manager.addShape(this.line);
+};
+
+
+var CreateArrow = function CreateArrow(options) {
+
+    var that = new CreateLine(options);
+
+    that.startDrag = function startDrag(startX, startY) {
+        var color = this.manager.getColor();
+        // Also need to get lineWidth and zoom/size etc.
+
+        this.line = new Arrow({
+            'paper': this.paper,
+            'x1': startX,
+            'y1': startY,
+            'x2': startX,
+            'y2': startY,
+            'color': color});
+    };
+
+    return that;
 };
 
 /* globals Raphael: false */
@@ -543,7 +571,8 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
     this.shapeFactories = {
         "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
-        "LINE": new CreateLine({'manager': this, 'paper': this.paper})
+        "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
+        "ARROW": new CreateArrow({'manager': this, 'paper': this.paper})
     };
 
     this.createShape = this.shapeFactories.LINE;

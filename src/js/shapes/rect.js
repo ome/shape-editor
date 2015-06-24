@@ -196,9 +196,6 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_start = function() {
         return function () {
-            if (self.disable_handles) {
-                return false;
-            }
             // START drag: simply note the location we started
             this.ox = this.attr("x");  // + self.handle_wh/2;
             this.oy = this.attr("y");  // + self.handle_wh/2;
@@ -210,11 +207,6 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
-            if (self.disable_handles) {
-                return false;
-            }
-            // this.rect.model.trigger('drag_resize_stop', [this.rect.x, this.rect.y,
-            //     this.rect.width, this.rect.height]);
             return false;
         };
     };

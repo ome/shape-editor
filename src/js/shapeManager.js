@@ -67,7 +67,6 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 };
 
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){
-    console.log('startDrag', this, arguments);
     // clear any existing selected shapes
     this.clearSelected();
 

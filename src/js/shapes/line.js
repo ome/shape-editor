@@ -29,9 +29,11 @@ var Line = function Line(options) {
     this._y2 = options.y2;
     this._color = options.color;
     this._lineWidth = options.lineWidth || 2;
+    this.handle_wh = 6;
 
     this.element = this.paper.path();
 
+    this.createHandles();
     // TODO: setup drag handling etc.
     this.drawShape();
 };
@@ -50,6 +52,9 @@ Line.prototype.getPath = function getPath() {
     return "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
 };
 
+Line.prototype.isSelected = function isSelected() {
+    return this._selected;
+};
 
 Line.prototype.drawShape = function drawShape() {
 
@@ -61,11 +66,102 @@ Line.prototype.drawShape = function drawShape() {
                        'stroke': '#' + color,
                        'fill': '#' + color,
                        'stroke-width': lineW});
+
+    if (this.isSelected()) {
+        this.element.toFront();
+        this.handles.show().toFront();
+    } else {
+        this.handles.hide();
+    }
+
+    // update Handles
+    var handleIds = this.getHandleCoords();
+    var hnd, h_id, hx, hy;
+    for (var h=0, l=this.handles.length; h<l; h++) {
+        hnd = this.handles[h];
+        h_id = hnd.h_id;
+        hx = handleIds[h_id].x;
+        hy = handleIds[h_id].y;
+        hnd.attr({'x':hx-this.handle_wh/2, 'y':hy-this.handle_wh/2});
+    }
 };
 
 Line.prototype.setSelected = function setSelected(selected) {
     this._selected = !!selected;
     this.drawShape();
+};
+
+
+Line.prototype.createHandles = function createHandles() {
+    // ---- Create Handles -----
+
+    var self = this,
+        // map of centre-points for each handle
+        handleIds = this.getHandleCoords(),
+        handleAttrs = {'stroke': '#4b80f9',
+                        'fill': '#fff',
+                        'cursor': 'default',
+                        'fill-opacity': 1.0};
+    // draw handles
+    self.handles = this.paper.set();
+    var _handle_drag = function() {
+        return function (dx, dy, mouseX, mouseY, event) {
+            // on DRAG...
+            if (this.h_id === "start" || this.h_id === "middle") {
+                self._x1 = this.old.x1 + dx;
+                self._y1 = this.old.y1 + dy;
+            }
+            if (this.h_id === "end" || this.h_id === "middle") {
+                self._x2 = this.old.x2 + dx;
+                self._y2 = this.old.y2 + dy;
+            }
+            self.drawShape();
+            return false;
+        };
+    };
+    var _handle_drag_start = function() {
+        return function () {
+            // START drag: cache the starting coords of the line
+            this.old = {
+                'x1': self._x1,
+                'x2': self._x2,
+                'y1': self._y1,
+                'y2': self._y2
+            };
+            return false;
+        };
+    };
+    var _handle_drag_end = function() {
+        return function() {
+            return false;
+        };
+    };
+
+    var hsize = this.handle_wh,
+        hx, hy, handle;
+    for (var key in handleIds) {
+        hx = handleIds[key].x;
+        hy = handleIds[key].y;
+        handle = this.paper.rect(hx-hsize/2, hy-hsize/2, hsize, hsize);
+        handle.attr({'cursor': 'move'});
+        handle.h_id = key;
+        handle.line = self;
+
+        handle.drag(
+            _handle_drag(),
+            _handle_drag_start(),
+            _handle_drag_end()
+        );
+        self.handles.push(handle);
+    }
+    self.handles.attr(handleAttrs).hide();     // show on selection
+};
+
+Line.prototype.getHandleCoords = function getHandleCoords() {
+    return {'start': {x: this._x1, y: this._y1},
+        'middle': {x: (this._x1+this._x2)/2, y: (this._y1+this._y2)/2},
+        'end': {x: this._x2, y: this._y2}
+    };
 };
 
 

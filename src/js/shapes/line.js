@@ -33,8 +33,35 @@ var Line = function Line(options) {
 
     this.element = this.paper.path();
 
+    // Drag handling of line
+    this.element.drag(
+        function(dx, dy) {
+            // DRAG, update location and redraw
+            self._x1 = this.old.x1 + dx;
+            self._y1 = this.old.y1 + dy;
+            self._x2 = this.old.x2 + dx;
+            self._y2 = this.old.y2 + dy;
+            self.drawShape();
+            return false;
+        },
+        function() {
+            // START drag: note the location of all points (copy list)
+            this.old = {
+                'x1': self._x1,
+                'x2': self._x2,
+                'y1': self._y1,
+                'y2': self._y2
+            };
+            return false;
+        },
+        function() {
+            // STOP
+            return false;
+        }
+    );
+
     this.createHandles();
-    // TODO: setup drag handling etc.
+
     this.drawShape();
 };
 
@@ -166,12 +193,45 @@ Line.prototype.getHandleCoords = function getHandleCoords() {
 
 
 
+var Arrow = function Arrow(options) {
+
+    var that = new Line(options);
+
+    that.getPath = function getPath() {
+
+        var headSize = (this._lineWidth * 3) + 9,
+            x2 = this._x2,
+            y2 = this._y2,
+            dx = x2 - this._x1,
+            dy = y2 - this._y1;
+
+        var linePath = "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
+        var lineAngle = Math.atan(dx / dy);
+        var f = (dy < 0 ? 1 : -1);
+
+        // Angle of arrow head is 0.8 radians (0.4 either side of lineAngle)
+        var arrowPoint1x = x2 + (f * Math.sin(lineAngle - 0.4) * headSize),
+            arrowPoint1y = y2 + (f * Math.cos(lineAngle - 0.4) * headSize),
+            arrowPoint2x = x2 + (f * Math.sin(lineAngle + 0.4) * headSize),
+            arrowPoint2y = y2 + (f * Math.cos(lineAngle + 0.4) * headSize);
+
+        // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'  
+        // and 'fill' is not from a head corner to the start of arrow.
+        var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
+        arrowPath = arrowPath + "L" + this._x2 + " " + this._y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + this._x2 + " " + this._y2;
+        return arrowPath;
+    };
+
+    return that;
+};
+
+
+
 // Class for creating Lines.
 var CreateLine = function CreateLine(options) {
 
     this.paper = options.paper;
     this.manager = options.manager;
-    console.log("CreateLine", this.manager);
 };
 
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
@@ -199,4 +259,27 @@ CreateLine.prototype.stopDrag = function stopDrag() {
 
     this.line.setSelected(true);
     this.manager.addShape(this.line);
+};
+
+
+var CreateArrow = function CreateArrow(options) {
+
+    var that = new CreateLine(options);
+
+    that.startDrag = function startDrag(startX, startY) {
+        var color = this.manager.getColor();
+        // Also need to get lineWidth and zoom/size etc.
+        console.log("CreateLine", this.manager);
+        console.log('CreateLine.startDrag', color, startX, startY);
+
+        this.line = new Arrow({
+            'paper': this.paper,
+            'x1': startX,
+            'y1': startY,
+            'x2': startX,
+            'y2': startY,
+            'color': color});
+    };
+
+    return that;
 };

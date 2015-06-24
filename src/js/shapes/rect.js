@@ -46,15 +46,13 @@ var Rect = function Rect(options) {
             return false;
         },
         function() {
-            console.log("START drag RECT");
             // START drag: note the location of all points (copy list)
             this.ox = this.attr('x');
             this.oy = this.attr('y');
             return false;
         },
         function() {
-            // STOP: save current position to model.
-            // self.model.trigger('drag_xy_stop', [self.x-this.ox, self.y-this.oy]);
+            // STOP
             return false;
         }
     );

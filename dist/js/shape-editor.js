@@ -8,6 +8,7 @@
 
 var Line = function Line(options) {
 
+    var self = this;
     this.paper = options.paper;
 
     this._x1 = options.x1;
@@ -20,8 +21,35 @@ var Line = function Line(options) {
 
     this.element = this.paper.path();
 
+    // Drag handling of line
+    this.element.drag(
+        function(dx, dy) {
+            // DRAG, update location and redraw
+            self._x1 = this.old.x1 + dx;
+            self._y1 = this.old.y1 + dy;
+            self._x2 = this.old.x2 + dx;
+            self._y2 = this.old.y2 + dy;
+            self.drawShape();
+            return false;
+        },
+        function() {
+            // START drag: note the location of all points (copy list)
+            this.old = {
+                'x1': self._x1,
+                'x2': self._x2,
+                'y1': self._y1,
+                'y2': self._y2
+            };
+            return false;
+        },
+        function() {
+            // STOP
+            return false;
+        }
+    );
+
     this.createHandles();
-    // TODO: setup drag handling etc.
+
     this.drawShape();
 };
 
@@ -94,9 +122,6 @@ Line.prototype.createHandles = function createHandles() {
     var _handle_drag = function() {
         return function (dx, dy, mouseX, mouseY, event) {
             // on DRAG...
-            // var absX = dx + this.ox,
-            //     absY = dy + this.oy;
-            // self.updateHandle(this.h_id, absX, absY);
             if (this.h_id === "start" || this.h_id === "middle") {
                 self._x1 = this.old.x1 + dx;
                 self._y1 = this.old.y1 + dy;
@@ -111,11 +136,7 @@ Line.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_start = function() {
         return function () {
-            // START drag: simply note the location we started
-            // this.ox = this.attr("x") + this.attr('width')/2;
-            // this.oy = this.attr("y") + this.attr('width')/2;
-
-            // cache the starting coords of the line
+            // START drag: cache the starting coords of the line
             this.old = {
                 'x1': self._x1,
                 'x2': self._x2,
@@ -127,12 +148,6 @@ Line.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
-            // this.line.model.set({
-            //     'x1': this.line.x1 * 100 / self.zoom,
-            //     'y1': this.line.y1 * 100 / self.zoom,
-            //     'x2':this.line.x2 * 100 / self.zoom,
-            //     'y2':this.line.y2 * 100 / self.zoom
-            // });
             return false;
         };
     };
@@ -196,7 +211,6 @@ var CreateLine = function CreateLine(options) {
 
     this.paper = options.paper;
     this.manager = options.manager;
-    console.log("CreateLine", this.manager);
 };
 
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
@@ -256,15 +270,13 @@ var Rect = function Rect(options) {
             return false;
         },
         function() {
-            console.log("START drag RECT");
             // START drag: note the location of all points (copy list)
             this.ox = this.attr('x');
             this.oy = this.attr('y');
             return false;
         },
         function() {
-            // STOP: save current position to model.
-            // self.model.trigger('drag_xy_stop', [self.x-this.ox, self.y-this.oy]);
+            // STOP
             return false;
         }
     );
@@ -406,9 +418,6 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_start = function() {
         return function () {
-            if (self.disable_handles) {
-                return false;
-            }
             // START drag: simply note the location we started
             this.ox = this.attr("x");  // + self.handle_wh/2;
             this.oy = this.attr("y");  // + self.handle_wh/2;
@@ -420,11 +429,6 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
-            if (self.disable_handles) {
-                return false;
-            }
-            // this.rect.model.trigger('drag_resize_stop', [this.rect.x, this.rect.y,
-            //     this.rect.width, this.rect.height]);
             return false;
         };
     };
@@ -498,6 +502,7 @@ CreateRect.prototype.stopDrag = function stopDrag() {
 /* globals Raphael: false */
 /* globals CreateRect: false */
 /* globals CreateLine: false */
+/* globals CreateArrow: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {

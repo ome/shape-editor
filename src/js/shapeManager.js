@@ -131,3 +131,8 @@ ShapeManager.prototype.clearSelected = function clearSelected() {
         this._shapes[i].setSelected(false);
     }
 };
+
+ShapeManager.prototype.selectShape = function selectShape(shape) {
+    this.clearSelected();
+    shape.setSelected(true);
+};

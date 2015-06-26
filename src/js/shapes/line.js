@@ -22,6 +22,7 @@
 var Line = function Line(options) {
 
     var self = this;
+    this.manager = options.manager;
     this.paper = options.paper;
 
     this._x1 = options.x1;
@@ -47,6 +48,7 @@ var Line = function Line(options) {
         },
         function() {
             // START drag: note the location of all points (copy list)
+            self._handleMousedown();
             this.old = {
                 'x1': self._x1,
                 'x2': self._x2,
@@ -66,6 +68,10 @@ var Line = function Line(options) {
     this.drawShape();
 };
 
+// handle start of drag by selecting this shape
+Line.prototype._handleMousedown = function _handleMousedown() {
+    this.manager.selectShape(this);
+};
 
 Line.prototype.setCoords = function setCoords(coords) {
     this._x1 = coords.x1 || this._x1;
@@ -128,7 +134,7 @@ Line.prototype.createHandles = function createHandles() {
         handleIds = this.getHandleCoords(),
         handleAttrs = {'stroke': '#4b80f9',
                         'fill': '#fff',
-                        'cursor': 'default',
+                        'cursor': 'move',
                         'fill-opacity': 1.0};
     // draw handles
     self.handles = this.paper.set();
@@ -241,6 +247,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
     // Also need to get lineWidth and zoom/size etc.
 
     this.line = new Line({
+        'manager': this.manager,
         'paper': this.paper,
         'x1': startX,
         'y1': startY,
@@ -270,6 +277,7 @@ var CreateArrow = function CreateArrow(options) {
         // Also need to get lineWidth and zoom/size etc.
 
         this.line = new Arrow({
+            'manager': this.manager,
             'paper': this.paper,
             'x1': startX,
             'y1': startY,

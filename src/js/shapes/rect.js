@@ -23,6 +23,7 @@ var Rect = function Rect(options) {
 
     var self = this;
     this.paper = options.paper;
+    this.manager = options.manager;
 
     this._x = options.x;
     this._y = options.y;
@@ -46,6 +47,7 @@ var Rect = function Rect(options) {
             return false;
         },
         function() {
+            self._handleMousedown();
             // START drag: note the location of all points (copy list)
             this.ox = this.attr('x');
             this.oy = this.attr('y');
@@ -60,6 +62,11 @@ var Rect = function Rect(options) {
     this.createHandles();
 
     this.drawShape();
+};
+
+// handle start of drag by selecting this shape
+Rect.prototype._handleMousedown = function _handleMousedown() {
+    this.manager.selectShape(this);
 };
 
 Rect.prototype.setSelected = function setSelected(selected) {
@@ -251,6 +258,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
     this.startY = startY;
 
     this.rect = new Rect({
+        'manager': this.manager,
         'paper': this.paper,
         'x': startX,
         'y': startY,

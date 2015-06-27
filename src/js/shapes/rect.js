@@ -86,6 +86,17 @@ Rect.prototype.setCoords = function setCoords(coords) {
     this.drawShape();
 };
 
+Rect.prototype.getCoords = function getCoords() {
+    return {'x': this._x,
+            'y': this._y,
+            'width': this._width,
+            'height': this._height};
+};
+
+Rect.prototype.destroy = function destroy() {
+    this.element.remove();
+    this.handles.remove();
+};
 
 Rect.prototype.drawShape = function drawShape() {
 
@@ -279,6 +290,12 @@ CreateRect.prototype.drag = function drag(dragX, dragY) {
 
 CreateRect.prototype.stopDrag = function stopDrag() {
 
+    var coords = this.rect.getCoords();
+    if (coords.width < 2 || coords.height < 2) {
+        this.rect.destroy();
+        delete this.rect;
+        return;
+    }
     this.rect.setSelected(true);
     this.manager.addShape(this.rect);
 };

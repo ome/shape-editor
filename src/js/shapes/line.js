@@ -81,6 +81,17 @@ Line.prototype.setCoords = function setCoords(coords) {
     this.drawShape();
 };
 
+Line.prototype.getCoords = function getCoords() {
+    return {'x1': this._x1,
+            'y1': this._y1,
+            'x2': this._x2,
+            'y2': this._y2};
+};
+
+Line.prototype.destroy = function destroy() {
+    this.element.remove();
+    this.handles.remove();
+};
 
 Line.prototype.getPath = function getPath() {
     return "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
@@ -263,6 +274,13 @@ CreateLine.prototype.drag = function drag(dragX, dragY) {
 
 CreateLine.prototype.stopDrag = function stopDrag() {
 
+    var coords = this.line.getCoords();
+    if ((Math.abs(coords.x1 - coords.x2) < 2) &&
+            (Math.abs(coords.y1 - coords.y2) < 2)) {
+        this.line.destroy();
+        delete this.line;
+        return;
+    }
     this.line.setSelected(true);
     this.manager.addShape(this.line);
 };

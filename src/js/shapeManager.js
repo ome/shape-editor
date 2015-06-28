@@ -153,4 +153,6 @@ ShapeManager.prototype.clearSelected = function clearSelected() {
 ShapeManager.prototype.selectShape = function selectShape(shape) {
     this.clearSelected();
     shape.setSelected(true);
+    this._color = shape.getColor();
+    this.$el.trigger("change:selected");
 };

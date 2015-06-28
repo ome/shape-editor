@@ -19,7 +19,12 @@ $(function() {
         shapeManager.setColor(color);
     });
 
+
+    $("#shapesCanvas").bind("change:selected", function(){
+        var color = shapeManager.getColor();
+        $("input[value='" + color + "']").prop('checked', 'checked');
+    });
+
     shapeManager.setState("RECT");
 
-    console.log("getState", shapeManager.getState());
 });

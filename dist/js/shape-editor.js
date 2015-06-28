@@ -75,6 +75,15 @@ Line.prototype.getCoords = function getCoords() {
             'y2': this._y2};
 };
 
+Line.prototype.setColor = function setColor(color) {
+    this._color = color;
+    this.drawShape();
+};
+
+Line.prototype.getColor = function getColor(color) {
+    return this._color;
+};
+
 Line.prototype.destroy = function destroy() {
     this.element.remove();
     this.handles.remove();
@@ -369,6 +378,15 @@ Rect.prototype.getCoords = function getCoords() {
             'y': this._y,
             'width': this._width,
             'height': this._height};
+};
+
+Rect.prototype.setColor = function setColor(color) {
+    this._color = color;
+    this.drawShape();
+};
+
+Rect.prototype.getColor = function getColor(color) {
+    return this._color;
 };
 
 Rect.prototype.destroy = function destroy() {
@@ -679,12 +697,30 @@ ShapeManager.prototype.getState = function getState() {
     return this._state;
 };
 
+ShapeManager.prototype.setColor = function setColor(color) {
+    this._color = color;
+    var selected = this.getSelected();
+    for (var s=0; s<selected.length; s++) {
+        selected[s].setColor(color);
+    }
+};
+
 ShapeManager.prototype.getColor = function getColor() {
     return this._color;
 };
 
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+};
+
+ShapeManager.prototype.getSelected = function getSelected() {
+    var selected = [];
+    for (var i=0; i<this._shapes.length; i++) {
+        if (this._shapes[i].isSelected()) {
+            selected.push(this._shapes[i]);
+        }
+    }
+    return selected;
 };
 
 ShapeManager.prototype.clearSelected = function clearSelected() {

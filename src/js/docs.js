@@ -14,6 +14,11 @@ $(function() {
         shapeManager.setState(state);
     });
 
+    $("input[name='color']").click(function(){
+        var color = $(this).val();
+        shapeManager.setColor(color);
+    });
+
     shapeManager.setState("RECT");
 
     console.log("getState", shapeManager.getState());

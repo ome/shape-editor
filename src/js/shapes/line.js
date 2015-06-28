@@ -88,6 +88,15 @@ Line.prototype.getCoords = function getCoords() {
             'y2': this._y2};
 };
 
+Line.prototype.setColor = function setColor(color) {
+    this._color = color;
+    this.drawShape();
+};
+
+Line.prototype.getColor = function getColor(color) {
+    return this._color;
+};
+
 Line.prototype.destroy = function destroy() {
     this.element.remove();
     this.handles.remove();

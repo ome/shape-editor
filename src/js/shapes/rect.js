@@ -93,6 +93,15 @@ Rect.prototype.getCoords = function getCoords() {
             'height': this._height};
 };
 
+Rect.prototype.setColor = function setColor(color) {
+    this._color = color;
+    this.drawShape();
+};
+
+Rect.prototype.getColor = function getColor(color) {
+    return this._color;
+};
+
 Rect.prototype.destroy = function destroy() {
     this.element.remove();
     this.handles.remove();

@@ -32,11 +32,11 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this._state = "SELECT";
     this._color = "ff0000";
 
-    // jQuery element used for .offset() etc.
-    this.$el = $("#" + elementId);
-
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
+
+    // jQuery element used for .offset() etc.
+    this.$el = $("#" + elementId);
 
     // Store all the shapes we create
     this._shapes = [];
@@ -89,7 +89,7 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
         dragX = x - offset.left,
         dragY = y - offset.top;
     this.createShape.drag(dragX, dragY);
-};
+}; 
 
 ShapeManager.prototype.stopDrag = function stopDrag(){
     this.createShape.stopDrag();

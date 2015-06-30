@@ -713,6 +713,9 @@ ShapeManager.prototype.setState = function setState(state) {
     } else {
         this.newShapeBg.hide();
     }
+    // clear selected shapes
+    this.clearSelected();
+
     this._state = state;
 };
 

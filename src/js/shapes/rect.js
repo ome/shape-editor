@@ -98,8 +98,17 @@ Rect.prototype.setColor = function setColor(color) {
     this.drawShape();
 };
 
-Rect.prototype.getColor = function getColor(color) {
+Rect.prototype.getColor = function getColor() {
     return this._color;
+};
+
+Rect.prototype.setLineWidth = function setLineWidth(lineWidth) {
+    this._lineWidth = lineWidth;
+    this.drawShape();
+};
+
+Rect.prototype.getLineWidth = function getLineWidth() {
+    return this._lineWidth;
 };
 
 Rect.prototype.destroy = function destroy() {
@@ -269,7 +278,8 @@ var CreateRect = function CreateRect(options) {
 
 CreateRect.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor();
+    var color = this.manager.getColor(),
+        lineWidth = this.manager.getLineWidth();
     // Also need to get lineWidth and zoom/size etc.
     console.log("CreateRect", this.manager);
     console.log('CreateRect.startDrag', color, startX, startY);
@@ -284,6 +294,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'width': 0,
         'height': 0,
+        'lineWidth': lineWidth,
         'color': color});
 };
 

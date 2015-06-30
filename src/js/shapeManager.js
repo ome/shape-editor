@@ -31,6 +31,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
     this._state = "SELECT";
     this._color = "ff0000";
+    this._lineWidth = 2;
 
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
@@ -130,6 +131,19 @@ ShapeManager.prototype.getColor = function getColor() {
     return this._color;
 };
 
+ShapeManager.prototype.setLineWidth = function setLineWidth(lineWidth) {
+    lineWidth = parseInt(lineWidth, 10);
+    this._lineWidth = lineWidth;
+    var selected = this.getSelected();
+    for (var s=0; s<selected.length; s++) {
+        selected[s].setLineWidth(lineWidth);
+    }
+};
+
+ShapeManager.prototype.getLineWidth = function getLineWidth() {
+    return this._lineWidth;
+};
+
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
 };
@@ -154,5 +168,6 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     this.clearSelected();
     shape.setSelected(true);
     this._color = shape.getColor();
+    this._lineWidth = shape.getLineWidth();
     this.$el.trigger("change:selected");
 };

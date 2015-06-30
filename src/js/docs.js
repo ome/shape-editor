@@ -19,10 +19,18 @@ $(function() {
         shapeManager.setColor(color);
     });
 
+    $("select[name='lineWidth']").change(function(){
+        var lineWidth = $(this).val();
+        shapeManager.setLineWidth(lineWidth);
+    });
+
 
     $("#shapesCanvas").bind("change:selected", function(){
         var color = shapeManager.getColor();
         $("input[value='" + color + "']").prop('checked', 'checked');
+        var lineWidth = shapeManager.getLineWidth();
+        console.log(lineWidth);
+        $("select[name='lineWidth']").val(lineWidth);
     });
 
     shapeManager.setState("RECT");

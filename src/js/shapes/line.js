@@ -93,8 +93,17 @@ Line.prototype.setColor = function setColor(color) {
     this.drawShape();
 };
 
-Line.prototype.getColor = function getColor(color) {
+Line.prototype.getColor = function getColor() {
     return this._color;
+};
+
+Line.prototype.setLineWidth = function setLineWidth(lineWidth) {
+    this._lineWidth = lineWidth;
+    this.drawShape();
+};
+
+Line.prototype.getLineWidth = function getLineWidth() {
+    return this._lineWidth;
 };
 
 Line.prototype.destroy = function destroy() {
@@ -263,8 +272,8 @@ var CreateLine = function CreateLine(options) {
 
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor();
-    // Also need to get lineWidth and zoom/size etc.
+    var color = this.manager.getColor(),
+        lineWidth = this.manager.getLineWidth();
 
     this.line = new Line({
         'manager': this.manager,
@@ -273,6 +282,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y1': startY,
         'x2': startX,
         'y2': startY,
+        'lineWidth': lineWidth,
         'color': color});
 };
 
@@ -300,8 +310,8 @@ var CreateArrow = function CreateArrow(options) {
     var that = new CreateLine(options);
 
     that.startDrag = function startDrag(startX, startY) {
-        var color = this.manager.getColor();
-        // Also need to get lineWidth and zoom/size etc.
+        var color = this.manager.getColor(),
+            lineWidth = this.manager.getLineWidth();
 
         this.line = new Arrow({
             'manager': this.manager,
@@ -310,6 +320,7 @@ var CreateArrow = function CreateArrow(options) {
             'y1': startY,
             'x2': startX,
             'y2': startY,
+            'lineWidth': lineWidth,
             'color': color});
     };
 

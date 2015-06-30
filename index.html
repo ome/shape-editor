@@ -12,6 +12,12 @@
 				padding: 10px;
 				display: inline-block;
 			}
+			.imageWrapper {
+				position: relative
+			}
+			.imageWrapper div, .imageWrapper img {
+				position: absolute;
+			}
 		</style>
 	</head>
 
@@ -50,7 +56,11 @@
 			</select>
 		</div>
 
-		<div id="shapesCanvas" style="width:512px; height:512px"></div>
+		<div class="imageWrapper">
+			<img src="http://jcb-dataviewer.rupress.org/jcb/render_image/124/32/0/"
+				style="width:512px; height:512px">
+			<div id="shapesCanvas" style="width:512px; height:512px"></div>
+		</div>
 
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>

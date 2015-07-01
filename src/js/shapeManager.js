@@ -105,6 +105,8 @@ ShapeManager.prototype.setState = function setState(state) {
     var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE"];
     if (shapes.indexOf(state) > -1) {
         this.newShapeBg.show().toFront();
+        // clear selected shapes
+        this.clearSelected();
 
         if (this.shapeFactories[state]) {
             this.createShape = this.shapeFactories[state];
@@ -112,8 +114,6 @@ ShapeManager.prototype.setState = function setState(state) {
     } else {
         this.newShapeBg.hide();
     }
-    // clear selected shapes
-    this.clearSelected();
 
     this._state = state;
 };

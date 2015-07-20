@@ -21,6 +21,7 @@
 /* globals CreateRect: false */
 /* globals CreateLine: false */
 /* globals CreateArrow: false */
+/* globals CreateEllipse: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -62,6 +63,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
     this.shapeFactories = {
         "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
+        "ELLIPSE": new CreateEllipse({'manager': this, 'paper': this.paper}),
         "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
         "ARROW": new CreateArrow({'manager': this, 'paper': this.paper})
     };

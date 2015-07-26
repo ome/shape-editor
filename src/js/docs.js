@@ -5,6 +5,7 @@ $(function() {
 
     var shapeManager = new ShapeManager("shapesCanvas", 512, 512);
 
+    var zoomPercent = 100;
 
     // set state depending on what we want to do,
     // for example to create Rectangle
@@ -22,6 +23,17 @@ $(function() {
     $("select[name='lineWidth']").change(function(){
         var lineWidth = $(this).val();
         shapeManager.setLineWidth(lineWidth);
+    });
+
+    $("button[name='zoomIn']").click(function(){
+        console.log("zoomIn");
+        zoomPercent += 20;
+        $("#zoomDisplay").text(zoomPercent + " %");
+    });
+    $("button[name='zoomOut']").click(function(){
+        console.log("zoomOut");
+        zoomPercent -= 20;
+        $("#zoomDisplay").text(zoomPercent + " %");
     });
 
 

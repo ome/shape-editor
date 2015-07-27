@@ -33,6 +33,8 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this._state = "SELECT";
     this._color = "ff0000";
     this._lineWidth = 2;
+    this._orig_width = width;
+    this._orig_height = height;
 
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
@@ -122,6 +124,41 @@ ShapeManager.prototype.setState = function setState(state) {
 
 ShapeManager.prototype.getState = function getState() {
     return this._state;
+};
+
+ShapeManager.prototype.setZoom = function setZoom(zoomPercent) {
+    // var zoom = this.shapeEditor.get('zoom');
+
+    // var $imgWrapper = $(".image_wrapper"),
+    //     currWidth = $imgWrapper.width(),
+    //     currHeight = $imgWrapper.height(),
+    //     currTop = parseInt($imgWrapper.css('top'), 10),
+    //     currLeft = parseInt($imgWrapper.css('left'), 10);
+
+    // var width = 512 * zoom / 100,
+    //     height = 512 * zoom / 100;
+    // $("#shapeCanvas").css({'width': width + "px", 'height': height + "px"});
+
+    // Update the svg and our newShapeBg.
+    // $("svg").css({'width': width + "px", 'height': height + "px"});
+    var width = this._orig_width * zoomPercent / 100,
+        height = this._orig_height * zoomPercent / 100;
+    this.paper.setSize(width, height);
+    this.paper.canvas.setAttribute("viewBox", "0 0 "+width+" "+height);
+    this.newShapeBg.attr({'width': width, 'height': height});
+
+    // zoom the shapes
+    this._shapes.forEach(function(shape){
+        shape.setZoom(zoomPercent);
+    });
+
+    // // image 
+    // $(".image_wrapper").css({'width': width + "px", 'height': height + "px"});
+    // // offset
+    // var deltaTop = (height - currHeight) / 2,
+    //     deltaLeft = (width - currWidth) / 2;
+    // $(".image_wrapper").css({'left': (currLeft - deltaLeft) + "px",
+    //                          'top': (currTop - deltaTop) + "px"});
 };
 
 ShapeManager.prototype.setColor = function setColor(color) {

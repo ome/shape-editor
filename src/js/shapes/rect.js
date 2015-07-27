@@ -32,6 +32,7 @@ var Rect = function Rect(options) {
     this._color = options.color;
     this._lineWidth = options.lineWidth || 2;
     this._selected = false;
+    this._zoom = 100;
     this.handle_wh = 6;
 
     this.element = this.paper.rect();
@@ -41,6 +42,8 @@ var Rect = function Rect(options) {
     this.element.drag(
         function(dx, dy) {
             // DRAG, update location and redraw
+            dx = dx * 100 / self._zoom;
+            dy = dy * 100 / self._zoom;
             self._x = dx+this.ox;
             self._y = this.oy+dy;
             self.drawShape();
@@ -49,8 +52,8 @@ var Rect = function Rect(options) {
         function() {
             self._handleMousedown();
             // START drag: note the location of all points (copy list)
-            this.ox = this.attr('x');
-            this.oy = this.attr('y');
+            this.ox = this.attr('x') * 100 / self._zoom;
+            this.oy = this.attr('y') * 100 / self._zoom;
             return false;
         },
         function() {
@@ -76,6 +79,11 @@ Rect.prototype.setSelected = function setSelected(selected) {
 
 Rect.prototype.isSelected = function isSelected() {
     return this._selected;
+};
+
+Rect.prototype.setZoom = function setZoom(zoom) {
+    this._zoom = zoom;
+    this.drawShape();
 };
 
 Rect.prototype.setCoords = function setCoords(coords) {
@@ -121,8 +129,14 @@ Rect.prototype.drawShape = function drawShape() {
     var color = this._color,
         lineW = this._lineWidth;
 
-    this.element.attr({'x':this._x, 'y':this._y,
-                       'width':this._width, 'height':this._height,
+    var f = this._zoom / 100,
+        x = this._x * f,
+        y = this._y * f,
+        w = this._width * f,
+        h = this._height * f;
+
+    this.element.attr({'x':x, 'y':y,
+                       'width':w, 'height':h,
                        'stroke': '#' + color,
                        'stroke-width': lineW});
 
@@ -136,8 +150,8 @@ Rect.prototype.drawShape = function drawShape() {
     // update Handles
     var handleIds = this.getHandleCoords();
     var hnd, h_id, hx, hy;
-    for (var h=0, l=this.handles.length; h<l; h++) {
-        hnd = this.handles[h];
+    for (var i=0, l=this.handles.length; i<l; i++) {
+        hnd = this.handles[i];
         h_id = hnd.h_id;
         hx = handleIds[h_id][0];
         hy = handleIds[h_id][1];
@@ -147,14 +161,20 @@ Rect.prototype.drawShape = function drawShape() {
 
 Rect.prototype.getHandleCoords = function getHandleCoords() {
 
-    var handleIds = {'nw': [this._x, this._y],
-        'n': [this._x+this._width/2,this._y],
-        'ne': [this._x+this._width,this._y],
-        'w': [this._x, this._y+this._height/2],
-        'e': [this._x+this._width, this._y+this._height/2],
-        'sw': [this._x, this._y+this._height],
-        's': [this._x+this._width/2, this._y+this._height],
-        'se': [this._x+this._width, this._y+this._height]};
+    var f = this._zoom / 100,
+        x = this._x * f,
+        y = this._y * f,
+        w = this._width * f,
+        h = this._height * f;
+
+    var handleIds = {'nw': [x, y],
+        'n': [x + w/2,y],
+        'ne': [x + w,y],
+        'w': [x, y + h/2],
+        'e': [x + w, y + h/2],
+        'sw': [x, y + h],
+        's': [x + w/2, y + h],
+        'se': [x + w, y + h]};
     return handleIds;
 };
 
@@ -174,6 +194,9 @@ Rect.prototype.createHandles = function createHandles() {
     self.handles = this.paper.set();
     var _handle_drag = function() {
         return function (dx, dy, mouseX, mouseY, event) {
+
+            dx = dx * 100 / self._zoom;
+            dy = dy * 100 / self._zoom;
 
             // If drag on corner handle, retain aspect ratio. dx/dy = aspect
             var keep_ratio = self.fixed_ratio || event.shiftKey;
@@ -209,11 +232,11 @@ Rect.prototype.createHandles = function createHandles() {
             }
             if (this.h_id.indexOf('n') > -1) {    // if we're dragging an 'NORTH' handle, update y and height
                 newRect.y = new_y + self.handle_wh/2;
-                newRect.height = this.obottom - new_y;
+                newRect.height = this.oheight - dy;
             }
             if (this.h_id.indexOf('w') > -1) {    // if we're dragging an 'WEST' handle, update x and width
                 newRect.x = new_x + self.handle_wh/2;
-                newRect.width = this.oright - new_x;
+                newRect.width = this.owidth - dx;
             }
             // Don't allow zero sized rect.
             if (newRect.width < 1 || newRect.height < 1) {
@@ -231,10 +254,10 @@ Rect.prototype.createHandles = function createHandles() {
     var _handle_drag_start = function() {
         return function () {
             // START drag: simply note the location we started
-            this.ox = this.attr("x");  // + self.handle_wh/2;
-            this.oy = this.attr("y");  // + self.handle_wh/2;
-            this.oright = self._width + this.ox;
-            this.obottom = self._height + this.oy;
+            this.ox = this.attr("x") * 100 / self._zoom;  // + self.handle_wh/2;
+            this.oy = this.attr("y") * 100 / self._zoom;  // + self.handle_wh/2;
+            this.owidth = self._width;
+            this.oheight = self._height;
             this.aspect = self._width / self._height;
             return false;
         };
@@ -273,7 +296,6 @@ var CreateRect = function CreateRect(options) {
 
     this.paper = options.paper;
     this.manager = options.manager;
-    console.log("CreateRect", this.manager);
 };
 
 CreateRect.prototype.startDrag = function startDrag(startX, startY) {
@@ -281,8 +303,6 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
     var color = this.manager.getColor(),
         lineWidth = this.manager.getLineWidth();
     // Also need to get lineWidth and zoom/size etc.
-    console.log("CreateRect", this.manager);
-    console.log('CreateRect.startDrag', color, startX, startY);
 
     this.startX = startX;
     this.startY = startY;

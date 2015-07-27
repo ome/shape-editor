@@ -3,7 +3,10 @@
 
 $(function() {
 
-    var shapeManager = new ShapeManager("shapesCanvas", 512, 512);
+    var WIDTH = 512,
+        HEIGHT = 512;
+
+    var shapeManager = new ShapeManager("shapesCanvas", WIDTH, HEIGHT);
 
     var zoomPercent = 100;
 
@@ -25,15 +28,20 @@ $(function() {
         shapeManager.setLineWidth(lineWidth);
     });
 
+    var updateZoom = function updateZoom() {
+        $("#zoomDisplay").text(zoomPercent + " %");
+        shapeManager.setZoom(zoomPercent);
+    };
+
     $("button[name='zoomIn']").click(function(){
         console.log("zoomIn");
         zoomPercent += 20;
-        $("#zoomDisplay").text(zoomPercent + " %");
+        updateZoom();
     });
     $("button[name='zoomOut']").click(function(){
         console.log("zoomOut");
         zoomPercent -= 20;
-        $("#zoomDisplay").text(zoomPercent + " %");
+        updateZoom();
     });
 
 

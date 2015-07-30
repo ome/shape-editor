@@ -32,6 +32,10 @@ var Line = function Line(options) {
     this._color = options.color;
     this._lineWidth = options.lineWidth || 2;
     this.handle_wh = 6;
+    this._zoomFraction = 1;
+    if (options.zoom) {
+        this._zoomFraction = options.zoom / 100;
+    }
 
     this.element = this.paper.path();
 
@@ -39,6 +43,8 @@ var Line = function Line(options) {
     this.element.drag(
         function(dx, dy) {
             // DRAG, update location and redraw
+            dx = dx / self._zoomFraction;
+            dy = dy / self._zoomFraction;
             self._x1 = this.old.x1 + dx;
             self._y1 = this.old.y1 + dy;
             self._x2 = this.old.x2 + dx;
@@ -47,7 +53,7 @@ var Line = function Line(options) {
             return false;
         },
         function() {
-            // START drag: note the location of all points (copy list)
+            // START drag: note the location of all points
             self._handleMousedown();
             this.old = {
                 'x1': self._x1,
@@ -112,11 +118,21 @@ Line.prototype.destroy = function destroy() {
 };
 
 Line.prototype.getPath = function getPath() {
-    return "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
+    var f = this._zoomFraction,
+        x1 = this._x1 * f,
+        y1 = this._y1 * f,
+        x2 = this._x2 * f,
+        y2 = this._y2 * f;
+    return "M" + x1 + " " + y1 + "L" + x2 + " " + y2;
 };
 
 Line.prototype.isSelected = function isSelected() {
     return this._selected;
+};
+
+Line.prototype.setZoom = function setZoom(zoom) {
+    this._zoomFraction = zoom / 100;
+    this.drawShape();
 };
 
 Line.prototype.drawShape = function drawShape() {
@@ -169,6 +185,10 @@ Line.prototype.createHandles = function createHandles() {
     self.handles = this.paper.set();
     var _handle_drag = function() {
         return function (dx, dy, mouseX, mouseY, event) {
+
+            dx = dx / self._zoomFraction;
+            dy = dy / self._zoomFraction;
+
             // on DRAG...
             if (this.h_id === "start" || this.h_id === "middle") {
                 self._x1 = this.old.x1 + dx;
@@ -221,9 +241,14 @@ Line.prototype.createHandles = function createHandles() {
 };
 
 Line.prototype.getHandleCoords = function getHandleCoords() {
-    return {'start': {x: this._x1, y: this._y1},
-        'middle': {x: (this._x1+this._x2)/2, y: (this._y1+this._y2)/2},
-        'end': {x: this._x2, y: this._y2}
+    var f = this._zoomFraction,
+        x1 = this._x1 * f,
+        y1 = this._y1 * f,
+        x2 = this._x2 * f,
+        y2 = this._y2 * f;
+    return {'start': {x: x1, y: y1},
+        'middle': {x: (x1+x2)/2, y: (y1+y2)/2},
+        'end': {x: x2, y: y2}
     };
 };
 
@@ -235,13 +260,18 @@ var Arrow = function Arrow(options) {
 
     that.getPath = function getPath() {
 
-        var headSize = (this._lineWidth * 3) + 9,
-            x2 = this._x2,
-            y2 = this._y2,
-            dx = x2 - this._x1,
-            dy = y2 - this._y1;
+        var zf = this._zoomFraction,
+            x1 = this._x1 * zf,
+            y1 = this._y1 * zf,
+            x2 = this._x2 * zf,
+            y2 = this._y2 * zf;
 
-        var linePath = "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
+        var headSize = (this._lineWidth * 3) + 9,
+            dx = x2 - x1,
+            dy = y2 - y1;
+
+
+        var linePath = "M" + x1 + " " + y1 + "L" + x2 + " " + y2;
         var lineAngle = Math.atan(dx / dy);
         var f = (dy < 0 ? 1 : -1);
 
@@ -254,7 +284,7 @@ var Arrow = function Arrow(options) {
         // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'
         // and 'fill' is not from a head corner to the start of arrow.
         var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
-        arrowPath = arrowPath + "L" + this._x2 + " " + this._y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + this._x2 + " " + this._y2;
+        arrowPath = arrowPath + "L" + x2 + " " + y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + x2 + " " + y2;
         return arrowPath;
     };
 
@@ -273,7 +303,8 @@ var CreateLine = function CreateLine(options) {
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
     var color = this.manager.getColor(),
-        lineWidth = this.manager.getLineWidth();
+        lineWidth = this.manager.getLineWidth(),
+        zoom = this.manager.getZoom();
 
     this.line = new Line({
         'manager': this.manager,
@@ -283,6 +314,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'x2': startX,
         'y2': startY,
         'lineWidth': lineWidth,
+        'zoom': zoom,
         'color': color});
 };
 
@@ -311,7 +343,8 @@ var CreateArrow = function CreateArrow(options) {
 
     that.startDrag = function startDrag(startX, startY) {
         var color = this.manager.getColor(),
-            lineWidth = this.manager.getLineWidth();
+            lineWidth = this.manager.getLineWidth(),
+            zoom = this.manager.getZoom();
 
         this.line = new Arrow({
             'manager': this.manager,
@@ -321,6 +354,7 @@ var CreateArrow = function CreateArrow(options) {
             'x2': startX,
             'y2': startY,
             'lineWidth': lineWidth,
+            'zoom': zoom,
             'color': color});
     };
 

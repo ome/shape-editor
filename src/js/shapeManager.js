@@ -35,6 +35,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this._lineWidth = 2;
     this._orig_width = width;
     this._orig_height = height;
+    this._zoom = 100;
 
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
@@ -83,6 +84,10 @@ ShapeManager.prototype.startDrag = function startDrag(x, y, event){
         startX = x - offset.left,
         startY = y - offset.top;
 
+    // correct for zoom before passing coordinates to shape
+    var zoomFraction = this._zoom / 100;
+    startX = startX / zoomFraction;
+    startY = startY / zoomFraction;
     this.createShape.startDrag(startX, startY);
 
     // Move this in front of new shape so that drag events don't get lost to the new shape
@@ -93,6 +98,11 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
     var offset = this.$el.offset(),
         dragX = x - offset.left,
         dragY = y - offset.top;
+
+    // correct for zoom before passing coordinates to shape
+    var zoomFraction = this._zoom / 100;
+    dragX = dragX / zoomFraction;
+    dragY = dragY / zoomFraction;
     this.createShape.drag(dragX, dragY);
 }; 
 
@@ -139,6 +149,7 @@ ShapeManager.prototype.setZoom = function setZoom(zoomPercent) {
     //     height = 512 * zoom / 100;
     // $("#shapeCanvas").css({'width': width + "px", 'height': height + "px"});
 
+    this._zoom = zoomPercent;
     // Update the svg and our newShapeBg.
     // $("svg").css({'width': width + "px", 'height': height + "px"});
     var width = this._orig_width * zoomPercent / 100,
@@ -159,6 +170,10 @@ ShapeManager.prototype.setZoom = function setZoom(zoomPercent) {
     //     deltaLeft = (width - currWidth) / 2;
     // $(".image_wrapper").css({'left': (currLeft - deltaLeft) + "px",
     //                          'top': (currTop - deltaTop) + "px"});
+};
+
+ShapeManager.prototype.getZoom = function getZoom(zoomPercent) {
+    return this._zoom;
 };
 
 ShapeManager.prototype.setColor = function setColor(color) {

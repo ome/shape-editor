@@ -32,6 +32,7 @@ var Line = function Line(options) {
     this._color = options.color;
     this._lineWidth = options.lineWidth || 2;
     this.handle_wh = 6;
+    this._selected = false;
     this._zoomFraction = 1;
     if (options.zoom) {
         this._zoomFraction = options.zoom / 100;

@@ -130,7 +130,7 @@ Rect.prototype.destroy = function destroy() {
 Rect.prototype.drawShape = function drawShape() {
 
     var color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
         x = this._x * f,

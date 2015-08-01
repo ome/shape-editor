@@ -166,7 +166,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
 Ellipse.prototype.drawShape = function drawShape() {
 
     var color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
         cx = this._cx * f,

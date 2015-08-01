@@ -127,7 +127,7 @@ Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
         color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
                        'stroke': '#' + color,
@@ -257,6 +257,7 @@ var Arrow = function Arrow(options) {
         var headSize = (this._lineWidth * 3) + 9,
             dx = x2 - x1,
             dy = y2 - y1;
+        headSize = headSize * this._zoomFraction;
 
 
         var linePath = "M" + x1 + " " + y1 + "L" + x2 + " " + y2;
@@ -463,7 +464,7 @@ Rect.prototype.destroy = function destroy() {
 Rect.prototype.drawShape = function drawShape() {
 
     var color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
         x = this._x * f,
@@ -828,7 +829,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
 Ellipse.prototype.drawShape = function drawShape() {
 
     var color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
         cx = this._cx * f,

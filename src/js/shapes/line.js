@@ -140,7 +140,7 @@ Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
         color = this._color,
-        lineW = this._lineWidth;
+        lineW = this._lineWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
                        'stroke': '#' + color,
@@ -270,6 +270,7 @@ var Arrow = function Arrow(options) {
         var headSize = (this._lineWidth * 3) + 9,
             dx = x2 - x1,
             dy = y2 - y1;
+        headSize = headSize * this._zoomFraction;
 
 
         var linePath = "M" + x1 + " " + y1 + "L" + x2 + " " + y2;

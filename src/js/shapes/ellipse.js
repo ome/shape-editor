@@ -129,6 +129,9 @@ Ellipse.prototype.setZoom = function setZoom(zoom) {
 };
 
 Ellipse.prototype.updateHandle = function updateHandle(handleId, x, y) {
+    // Refresh the handle coordinates, then update the specified handle
+    // using MODEL coordinates
+    this._handleIds = this.getHandleCoords();
     var h = this._handleIds[handleId];
     h.x = x;
     h.y = y;
@@ -186,15 +189,14 @@ Ellipse.prototype.drawShape = function drawShape() {
         this.handles.hide();
     }
 
-    // update Handles
+    // handles have been updated (model coords)
     this._handleIds = this.getHandleCoords();
-    console.log("handleIds", this._handleIds);
     var hnd, h_id, hx, hy;
     for (var h=0, l=this.handles.length; h<l; h++) {
         hnd = this.handles[h];
         h_id = hnd.h_id;
-        hx = this._handleIds[h_id].x;
-        hy = this._handleIds[h_id].y;
+        hx = this._handleIds[h_id].x * this._zoomFraction;
+        hy = this._handleIds[h_id].y * this._zoomFraction;
         hnd.attr({'x':hx-this.handle_wh/2, 'y':hy-this.handle_wh/2});
     }
 };
@@ -208,6 +210,8 @@ Ellipse.prototype.setSelected = function setSelected(selected) {
 Ellipse.prototype.createHandles = function createHandles() {
     // ---- Create Handles -----
 
+    // NB: handleIds are used to calculate ellipse coords
+    // so handledIds are scaled to MODEL coords, not zoomed.
     this._handleIds = this.getHandleCoords();
 
     var self = this,
@@ -233,6 +237,7 @@ Ellipse.prototype.createHandles = function createHandles() {
     var _handle_drag_start = function() {
         return function () {
             // START drag: simply note the location we started
+            // we scale by zoom to get the 'model' coordinates
             this.ox = (this.attr("x") + this.attr('width')/2) / self._zoomFraction;
             this.oy = (this.attr("y") + this.attr('height')/2) / self._zoomFraction;
             return false;
@@ -266,13 +271,12 @@ Ellipse.prototype.createHandles = function createHandles() {
 };
 
 Ellipse.prototype.getHandleCoords = function getHandleCoords() {
-    
+    // Returns MODEL coordinates (not zoom coordinates)
     var rot = Raphael.rad(this._rotation),
-        f = this._zoomFraction,
-        cx = this._cx * f,
-        cy = this._cy * f,
-        rx = this._rx * f,
-        ry = this._ry * f,
+        cx = this._cx,
+        cy = this._cy,
+        rx = this._rx,
+        ry = this._ry,
         startX = cx - (Math.cos(rot) * rx),
         startY = cy - (Math.sin(rot) * rx),
         endX = cx + (Math.cos(rot) * rx),

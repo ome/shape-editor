@@ -31,15 +31,16 @@ $(function() {
     var updateZoom = function updateZoom() {
         $("#zoomDisplay").text(zoomPercent + " %");
         shapeManager.setZoom(zoomPercent);
+        var w = WIDTH * zoomPercent / 100,
+            h = HEIGHT * zoomPercent / 100;
+        $(".imageWrapper img").css({'width': w, 'height': h});
     };
 
     $("button[name='zoomIn']").click(function(){
-        console.log("zoomIn");
         zoomPercent += 20;
         updateZoom();
     });
     $("button[name='zoomOut']").click(function(){
-        console.log("zoomOut");
         zoomPercent -= 20;
         updateZoom();
     });
@@ -49,7 +50,6 @@ $(function() {
         var color = shapeManager.getColor();
         $("input[value='" + color + "']").prop('checked', 'checked');
         var lineWidth = shapeManager.getLineWidth();
-        console.log(lineWidth);
         $("select[name='lineWidth']").val(lineWidth);
     });
 

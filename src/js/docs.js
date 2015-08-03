@@ -45,6 +45,10 @@ $(function() {
         updateZoom();
     });
 
+    $("button[name='delete']").click(function(){
+        shapeManager.deleteSelected();
+    });
+
 
     $("#shapesCanvas").bind("change:selected", function(){
         var color = shapeManager.getColor();

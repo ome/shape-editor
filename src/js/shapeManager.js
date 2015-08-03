@@ -215,10 +215,24 @@ ShapeManager.prototype.getSelected = function getSelected() {
     return selected;
 };
 
+ShapeManager.prototype.deleteSelected = function getSelected() {
+    var notSelected = [];
+    this._shapes.forEach(function(s) {
+        if (s.isSelected()) {
+            s.destroy();
+        } else {
+            notSelected.push(s);
+        }
+    });
+    this._shapes = notSelected;
+    this.$el.trigger("change:selected");
+};
+
 ShapeManager.prototype.clearSelected = function clearSelected() {
     for (var i=0; i<this._shapes.length; i++) {
         this._shapes[i].setSelected(false);
     }
+    this.$el.trigger("change:selected");
 };
 
 ShapeManager.prototype.selectShape = function selectShape(shape) {

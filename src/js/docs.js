@@ -57,6 +57,30 @@ $(function() {
         $("select[name='lineWidth']").val(lineWidth);
     });
 
-    shapeManager.setState("RECT");
+    // Add some shapes to display
+    shapeManager.addShapeJson({"type": "Rectangle",
+                               "color": "ffffff",
+                               "lineWidth": 6,
+                               "x": 200, "y": 150,
+                               "width": 125, "height": 150});
 
+    shapeManager.addShapeJson({"type": "Ellipse",
+                               "cx": 200, "cy": 150,
+                               "rx": 125, "ry": 50,
+                               "rotation": 45});
+
+    shapeManager.addShapeJson({"type": "Arrow",
+                               "color": "ffff00",
+                               "lineWidth": 4,
+                               "x1": 25, "y1": 450,
+                               "x2": 200, "y2": 400});
+
+    shapeManager.addShapeJson({"type": "Line",
+                               "color": "00ff00",
+                               "lineWidth": 2,
+                               "x1": 400, "y1": 400,
+                               "x2": 250, "y2": 310});
+
+    // We start off in the 'SELECT' mode
+    shapeManager.setState("SELECT");
 });

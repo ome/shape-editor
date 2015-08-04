@@ -19,9 +19,13 @@
 
 /* globals Raphael: false */
 /* globals CreateRect: false */
+/* globals Rect: false */
 /* globals CreateLine: false */
+/* globals Line: false */
 /* globals CreateArrow: false */
+/* globals Arrow: false */
 /* globals CreateEllipse: false */
+/* globals Ellipse: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -201,6 +205,54 @@ ShapeManager.prototype.getLineWidth = function getLineWidth() {
     return this._lineWidth;
 };
 
+// Add a json shape object
+ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
+    
+    var s = jsonShape,
+        newShape,
+        color = s.color || this.getColor(),
+        lineWidth = s.lineWidth || this.getLineWidth(),
+        zoom = this.getZoom(),
+        options = {'manager': this,
+                   'paper': this.paper,
+                   'lineWidth': lineWidth,
+                   'zoom': zoom,
+                   'color': color};
+
+    if (s.type === 'Ellipse') {
+        options.cx = s.cx;
+        options.cy = s.cy;
+        options.rx = s.rx;
+        options.ry = s.ry;
+        options.rotation = s.rotation || 0;
+        newShape = new Ellipse(options);
+    }
+    else if (s.type === 'Rectangle') {
+        options.x = s.x;
+        options.y = s.y;
+        options.width = s.width;
+        options.height = s.height;
+        newShape = new Rect(options);
+    }
+    else if (s.type === 'Line') {
+        options.x1 = s.x1;
+        options.y1 = s.y1;
+        options.x2 = s.x2;
+        options.y2 = s.y2;
+        newShape = new Line(options);
+    }
+    else if (s.type === 'Arrow') {
+        options.x1 = s.x1;
+        options.y1 = s.y1;
+        options.x2 = s.x2;
+        options.y2 = s.y2;
+        newShape = new Arrow(options);
+    }
+
+    this._shapes.push(newShape);
+};
+
+// Add a shape object
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
 };

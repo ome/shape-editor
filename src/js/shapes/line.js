@@ -290,6 +290,11 @@ var Arrow = function Arrow(options) {
         return arrowPath;
     };
 
+    // since we've over-ridden getPath() after it is called
+    // during  new Line(options)
+    // we need to call it again!
+    that.drawShape();
+
     return that;
 };
 

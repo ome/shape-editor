@@ -45,10 +45,28 @@ $(function() {
         updateZoom();
     });
 
-    $("button[name='delete']").click(function(){
+    $("button[name='deleteSelected']").click(function(){
         shapeManager.deleteSelected();
     });
 
+    $("button[name='deleteAll']").click(function(){
+        shapeManager.deleteAll();
+    });
+
+    $("button[name='setShapes']").click(function(){
+        var shapesJson = [
+          {"type": "Rectangle",
+            "color": "ff00ff",
+            "lineWidth": 10,
+            "x": 100, "y": 250,
+            "width": 325, "height": 250},
+          {"type": "Ellipse",
+            "cx": 300, "cy": 250,
+            "rx": 125, "ry": 250,
+            "rotation": 100}
+          ];
+        shapeManager.setShapesJson(shapesJson);
+    });
 
     $("#shapesCanvas").bind("change:selected", function(){
         var color = shapeManager.getColor();

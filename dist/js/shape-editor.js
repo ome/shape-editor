@@ -62,6 +62,18 @@ var Line = function Line(options) {
     this.drawShape();
 };
 
+Line.prototype.toJson = function toJson() {
+    return {
+        'type': 'Line',
+        'x1': this._x1,
+        'x2': this._x2,
+        'y1': this._y1,
+        'y2': this._y2,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
+};
+
 // handle start of drag by selecting this shape
 Line.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);
@@ -246,6 +258,14 @@ var Arrow = function Arrow(options) {
 
     var that = new Line(options);
 
+    var toJ = that.toJson;
+
+    that.toJson = function toJson() {
+        var lineJson = toJ.call(that);
+        lineJson.type = "Arrow";
+        return lineJson;
+    };
+
     that.getPath = function getPath() {
 
         var zf = this._zoomFraction,
@@ -407,6 +427,18 @@ var Rect = function Rect(options) {
     this.createHandles();
 
     this.drawShape();
+};
+
+Rect.prototype.toJson = function toJson() {
+    return {
+        'type': 'Rectangle',
+        'x': this._x,
+        'y': this._y,
+        'width': this._width,
+        'height': this._height,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
 };
 
 // handle start of drag by selecting this shape
@@ -738,6 +770,19 @@ var Ellipse = function Ellipse(options) {
     this.createHandles();
 
     this.drawShape();
+};
+
+Ellipse.prototype.toJson = function toJson() {
+    return {
+        'type': "Ellipse",
+        'cx': this._cx,
+        'cy': this._cy,
+        'rx': this._rx,
+        'ry': this._ry,
+        'rotation': this._rotation,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
 };
 
 // handle start of drag by selecting this shape
@@ -1192,6 +1237,14 @@ ShapeManager.prototype.setLineWidth = function setLineWidth(lineWidth) {
 
 ShapeManager.prototype.getLineWidth = function getLineWidth() {
     return this._lineWidth;
+};
+
+ShapeManager.prototype.getShapesJson = function getShapesJson() {
+    var data = [];
+    this.getShapes().forEach(function(s){
+        data.push(s.toJson());
+    });
+    return data;
 };
 
 ShapeManager.prototype.setShapesJson = function setShapesJson(jsonShapes) {

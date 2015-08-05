@@ -75,6 +75,18 @@ var Line = function Line(options) {
     this.drawShape();
 };
 
+Line.prototype.toJson = function toJson() {
+    return {
+        'type': 'Line',
+        'x1': this._x1,
+        'x2': this._x2,
+        'y1': this._y1,
+        'y2': this._y2,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
+};
+
 // handle start of drag by selecting this shape
 Line.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);
@@ -258,6 +270,14 @@ Line.prototype.getHandleCoords = function getHandleCoords() {
 var Arrow = function Arrow(options) {
 
     var that = new Line(options);
+
+    var toJ = that.toJson;
+
+    that.toJson = function toJson() {
+        var lineJson = toJ.call(that);
+        lineJson.type = "Arrow";
+        return lineJson;
+    };
 
     that.getPath = function getPath() {
 

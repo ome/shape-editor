@@ -70,6 +70,18 @@ var Rect = function Rect(options) {
     this.drawShape();
 };
 
+Rect.prototype.toJson = function toJson() {
+    return {
+        'type': 'Rectangle',
+        'x': this._x,
+        'y': this._y,
+        'width': this._width,
+        'height': this._height,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
+};
+
 // handle start of drag by selecting this shape
 Rect.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);

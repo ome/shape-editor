@@ -53,6 +53,11 @@ $(function() {
         shapeManager.deleteAll();
     });
 
+    $("button[name='getShapes']").click(function(){
+      var json = shapeManager.getShapesJson();
+      console.log(json);
+    });
+
     $("button[name='setShapes']").click(function(){
         var shapesJson = [
           {"type": "Rectangle",

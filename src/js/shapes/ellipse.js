@@ -72,6 +72,19 @@ var Ellipse = function Ellipse(options) {
     this.drawShape();
 };
 
+Ellipse.prototype.toJson = function toJson() {
+    return {
+        'type': "Ellipse",
+        'cx': this._cx,
+        'cy': this._cy,
+        'rx': this._rx,
+        'ry': this._ry,
+        'rotation': this._rotation,
+        'lineWidth': this._lineWidth,
+        'color': this._color
+    };
+};
+
 // handle start of drag by selecting this shape
 Ellipse.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);

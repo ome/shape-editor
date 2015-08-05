@@ -205,6 +205,14 @@ ShapeManager.prototype.getLineWidth = function getLineWidth() {
     return this._lineWidth;
 };
 
+ShapeManager.prototype.getShapesJson = function getShapesJson() {
+    var data = [];
+    this.getShapes().forEach(function(s){
+        data.push(s.toJson());
+    });
+    return data;
+};
+
 ShapeManager.prototype.setShapesJson = function setShapesJson(jsonShapes) {
     this.deleteAll();
     var self = this;

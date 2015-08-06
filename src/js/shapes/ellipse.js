@@ -25,6 +25,9 @@ var Ellipse = function Ellipse(options) {
     this.manager = options.manager;
     this.paper = options.paper;
 
+    if (options.id) {
+        this._id = options.id;
+    }
     this._cx = options.cx;
     this._cy = options.cy;
     this._rx = options.rx;
@@ -73,7 +76,7 @@ var Ellipse = function Ellipse(options) {
 };
 
 Ellipse.prototype.toJson = function toJson() {
-    return {
+    var rv = {
         'type': "Ellipse",
         'cx': this._cx,
         'cy': this._cy,
@@ -83,6 +86,10 @@ Ellipse.prototype.toJson = function toJson() {
         'lineWidth': this._lineWidth,
         'color': this._color
     };
+    if (this._id) {
+        rv.id = this._id;
+    }
+    return rv;
 };
 
 // handle start of drag by selecting this shape

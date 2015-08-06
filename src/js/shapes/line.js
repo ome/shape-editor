@@ -25,6 +25,9 @@ var Line = function Line(options) {
     this.manager = options.manager;
     this.paper = options.paper;
 
+    if (options.id) {
+        this._id = options.id;
+    }
     this._x1 = options.x1;
     this._y1 = options.y1;
     this._x2 = options.x2;
@@ -76,7 +79,7 @@ var Line = function Line(options) {
 };
 
 Line.prototype.toJson = function toJson() {
-    return {
+    var rv = {
         'type': 'Line',
         'x1': this._x1,
         'x2': this._x2,
@@ -85,6 +88,10 @@ Line.prototype.toJson = function toJson() {
         'lineWidth': this._lineWidth,
         'color': this._color
     };
+    if (this._id) {
+        rv.id = this._id;
+    }
+    return rv;
 };
 
 // handle start of drag by selecting this shape

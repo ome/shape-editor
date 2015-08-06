@@ -234,6 +234,9 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
                    'lineWidth': lineWidth,
                    'zoom': zoom,
                    'color': color};
+    if (jsonShape.id) {
+        options.id = jsonShape.id;
+    }
 
     if (s.type === 'Ellipse') {
         options.cx = s.cx;

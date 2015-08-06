@@ -81,7 +81,8 @@ $(function() {
     });
 
     // Add some shapes to display
-    shapeManager.addShapeJson({"type": "Rectangle",
+    shapeManager.addShapeJson({"id": 1234,
+                               "type": "Rectangle",
                                "color": "ffffff",
                                "lineWidth": 6,
                                "x": 200, "y": 150,

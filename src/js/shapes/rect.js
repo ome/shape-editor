@@ -25,6 +25,9 @@ var Rect = function Rect(options) {
     this.paper = options.paper;
     this.manager = options.manager;
 
+    if (options.id) {
+        this._id = options.id;
+    }
     this._x = options.x;
     this._y = options.y;
     this._width = options.width;
@@ -71,7 +74,7 @@ var Rect = function Rect(options) {
 };
 
 Rect.prototype.toJson = function toJson() {
-    return {
+    var rv = {
         'type': 'Rectangle',
         'x': this._x,
         'y': this._y,
@@ -80,6 +83,10 @@ Rect.prototype.toJson = function toJson() {
         'lineWidth': this._lineWidth,
         'color': this._color
     };
+    if (this._id) {
+        rv.id = this._id;
+    }
+    return rv;
 };
 
 // handle start of drag by selecting this shape

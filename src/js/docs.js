@@ -80,6 +80,10 @@ $(function() {
         $("select[name='lineWidth']").val(lineWidth);
     });
 
+    $("#shapesCanvas").bind("change:shape", function(event, shape){
+        console.log("changed", shape.toJson());
+    });
+
     // Add some shapes to display
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",

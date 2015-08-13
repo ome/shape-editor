@@ -66,6 +66,10 @@ var Ellipse = function Ellipse(options) {
         },
         function() {
             // STOP
+            // notify changed if moved
+            if (this.ox !== self._cx || this.oy !== self._cy) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -265,6 +269,8 @@ Ellipse.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            // simply notify manager that shape has changed
+            self.manager.notifyShapeChanged(self);
             return false;
         };
     };

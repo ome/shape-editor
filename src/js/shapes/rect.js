@@ -58,12 +58,16 @@ var Rect = function Rect(options) {
         function() {
             self._handleMousedown();
             // START drag: note the location of this handle
-            this.ox = this.attr('x') / self._zoomFraction;
-            this.oy = this.attr('y') / self._zoomFraction;
+            this.ox = self._x;
+            this.oy = self._y;
             return false;
         },
         function() {
             // STOP
+            // notify manager if rectangle has moved
+            if (self._x !== this.ox || self._y !== this.oy) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -286,6 +290,9 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            if (this.owidth !== self._width || this.oheight !== self._height) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         };
     };

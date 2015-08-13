@@ -69,6 +69,10 @@ var Line = function Line(options) {
         },
         function() {
             // STOP
+            // notify manager if line has moved
+            if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -236,6 +240,11 @@ Line.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            // notify manager if line has moved
+            if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1 ||
+                    self._x2 !== this.old.x2 || self._y2 !== this.old.y2) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         };
     };

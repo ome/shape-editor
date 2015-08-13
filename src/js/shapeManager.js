@@ -326,3 +326,7 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     this._lineWidth = shape.getLineWidth();
     this.$el.trigger("change:selected");
 };
+
+ShapeManager.prototype.notifyShapeChanged = function notifyShapeChanged(shape) {
+    this.$el.trigger("change:shape", [shape]);
+};

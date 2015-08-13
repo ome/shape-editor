@@ -56,6 +56,10 @@ var Line = function Line(options) {
         },
         function() {
             // STOP
+            // notify manager if line has moved
+            if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -223,6 +227,11 @@ Line.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            // notify manager if line has moved
+            if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1 ||
+                    self._x2 !== this.old.x2 || self._y2 !== this.old.y2) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         };
     };
@@ -424,12 +433,16 @@ var Rect = function Rect(options) {
         function() {
             self._handleMousedown();
             // START drag: note the location of this handle
-            this.ox = this.attr('x') / self._zoomFraction;
-            this.oy = this.attr('y') / self._zoomFraction;
+            this.ox = self._x;
+            this.oy = self._y;
             return false;
         },
         function() {
             // STOP
+            // notify manager if rectangle has moved
+            if (self._x !== this.ox || self._y !== this.oy) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -652,6 +665,9 @@ Rect.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            if (this.owidth !== self._width || this.oheight !== self._height) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         };
     };
@@ -780,6 +796,10 @@ var Ellipse = function Ellipse(options) {
         },
         function() {
             // STOP
+            // notify changed if moved
+            if (this.ox !== self._cx || this.oy !== self._cy) {
+                self.manager.notifyShapeChanged(self);
+            }
             return false;
         }
     );
@@ -979,6 +999,8 @@ Ellipse.prototype.createHandles = function createHandles() {
     };
     var _handle_drag_end = function() {
         return function() {
+            // simply notify manager that shape has changed
+            self.manager.notifyShapeChanged(self);
             return false;
         };
     };
@@ -1380,4 +1402,8 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     this._color = shape.getColor();
     this._lineWidth = shape.getLineWidth();
     this.$el.trigger("change:selected");
+};
+
+ShapeManager.prototype.notifyShapeChanged = function notifyShapeChanged(shape) {
+    this.$el.trigger("change:shape", [shape]);
 };

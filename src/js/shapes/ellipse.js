@@ -175,10 +175,10 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
         this._rotation = 180 + Raphael.deg(rot);
     }
     
-    this._cx = (hh.start.x + hh.end.x)/2,
-    this._cy = (hh.start.y + hh.end.y)/2,
-    this._rx = Math.sqrt((lengthX * lengthX) + (lengthY * lengthY)) / 2,
-    this._ry = Math.sqrt((widthX * widthX) + (widthY * widthY)) / 2,
+    this._cx = (hh.start.x + hh.end.x)/2;
+    this._cy = (hh.start.y + hh.end.y)/2;
+    this._rx = Math.sqrt((lengthX * lengthX) + (lengthY * lengthY)) / 2;
+    this._ry = Math.sqrt((widthX * widthX) + (widthY * widthY)) / 2;
 
     this.drawShape();
 };

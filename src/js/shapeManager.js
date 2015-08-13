@@ -108,7 +108,7 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
     dragX = dragX / zoomFraction;
     dragY = dragY / zoomFraction;
     this.createShape.drag(dragX, dragY);
-}; 
+};
 
 ShapeManager.prototype.stopDrag = function stopDrag(){
     this.createShape.stopDrag();

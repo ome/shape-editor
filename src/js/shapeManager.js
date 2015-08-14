@@ -280,6 +280,15 @@ ShapeManager.prototype.getShapes = function getShapes() {
     return this._shapes;
 };
 
+ShapeManager.prototype.getShape = function getShape(shapeId) {
+    var shapes = this.getShapes();
+    for (var i=0; i<shapes.length; i++) {
+        if (shapes[i]._id === shapeId) {
+            return shapes[i];
+        }
+    }
+};
+
 ShapeManager.prototype.getSelected = function getSelected() {
     var selected = [],
         shapes = this.getShapes();
@@ -319,11 +328,17 @@ ShapeManager.prototype.clearSelected = function clearSelected() {
     this.$el.trigger("change:selected");
 };
 
+// select shape: 'shape' can be shape object or ID
 ShapeManager.prototype.selectShape = function selectShape(shape) {
+    if (typeof shape === "number") {
+        shape = this.getShape(shape);
+    }
     this.clearSelected();
-    shape.setSelected(true);
-    this._color = shape.getColor();
-    this._lineWidth = shape.getLineWidth();
+    if (shape) {
+        shape.setSelected(true);
+        this._color = shape.getColor();
+        this._lineWidth = shape.getLineWidth();
+    }
     this.$el.trigger("change:selected");
 };
 

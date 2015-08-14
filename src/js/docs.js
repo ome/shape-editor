@@ -58,6 +58,10 @@ $(function() {
       console.log(json);
     });
 
+    $("button[name='selectShape']").click(function(){
+      shapeManager.selectShape(1234);
+    });
+
     $("button[name='setShapes']").click(function(){
         var shapesJson = [
           {"type": "Rectangle",

@@ -274,6 +274,7 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
 // Add a shape object
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+    this.$el.trigger("new:shape", [shape]);
 };
 
 ShapeManager.prototype.getShapes = function getShapes() {
@@ -344,4 +345,11 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
 
 ShapeManager.prototype.notifyShapeChanged = function notifyShapeChanged(shape) {
     this.$el.trigger("change:shape", [shape]);
+};
+
+ShapeManager.prototype.getRandomId = function getRandomId() {
+    // returns a random integer we can use for id
+    // NB - we use negative numbers to distinguish from server-side IDs
+    var rndString = Math.random() + "";     // E.g. 0.7158358106389642
+    return -parseInt(rndString.slice(2), 10);    // -7158358106389642
 };

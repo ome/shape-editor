@@ -14,6 +14,8 @@ var Line = function Line(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._x1 = options.x1;
     this._y1 = options.y1;
@@ -362,8 +364,8 @@ CreateLine.prototype.stopDrag = function stopDrag() {
         delete this.line;
         return;
     }
-    this.line.setSelected(true);
     this.manager.addShape(this.line);
+    this.line.setSelected(true);
 };
 
 
@@ -402,6 +404,8 @@ var Rect = function Rect(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._x = options.x;
     this._y = options.y;
@@ -742,8 +746,8 @@ CreateRect.prototype.stopDrag = function stopDrag() {
         delete this.rect;
         return;
     }
-    this.rect.setSelected(true);
     this.manager.addShape(this.rect);
+    this.rect.setSelected(true);
 };
 
 /* globals Raphael: false */
@@ -757,6 +761,8 @@ var Ellipse = function Ellipse(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._cx = options.cx;
     this._cy = options.cy;
@@ -1090,8 +1096,8 @@ CreateEllipse.prototype.stopDrag = function stopDrag() {
     //     delete this.line;
     //     return;
     // }
-    this.ellipse.setSelected(true);
     this.manager.addShape(this.ellipse);
+    this.ellipse.setSelected(true);
 };
 
 /* globals Raphael: false */
@@ -1351,6 +1357,7 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
 // Add a shape object
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+    this.$el.trigger("new:shape", [shape]);
 };
 
 ShapeManager.prototype.getShapes = function getShapes() {
@@ -1421,4 +1428,11 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
 
 ShapeManager.prototype.notifyShapeChanged = function notifyShapeChanged(shape) {
     this.$el.trigger("change:shape", [shape]);
+};
+
+ShapeManager.prototype.getRandomId = function getRandomId() {
+    // returns a random integer we can use for id
+    // NB - we use negative numbers to distinguish from server-side IDs
+    var rndString = Math.random() + "";     // E.g. 0.7158358106389642
+    return -parseInt(rndString.slice(2), 10);    // -7158358106389642
 };

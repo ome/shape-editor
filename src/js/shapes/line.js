@@ -27,6 +27,8 @@ var Line = function Line(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._x1 = options.x1;
     this._y1 = options.y1;
@@ -375,8 +377,8 @@ CreateLine.prototype.stopDrag = function stopDrag() {
         delete this.line;
         return;
     }
-    this.line.setSelected(true);
     this.manager.addShape(this.line);
+    this.line.setSelected(true);
 };
 
 

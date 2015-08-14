@@ -27,6 +27,8 @@ var Rect = function Rect(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._x = options.x;
     this._y = options.y;
@@ -367,6 +369,6 @@ CreateRect.prototype.stopDrag = function stopDrag() {
         delete this.rect;
         return;
     }
-    this.rect.setSelected(true);
     this.manager.addShape(this.rect);
+    this.rect.setSelected(true);
 };

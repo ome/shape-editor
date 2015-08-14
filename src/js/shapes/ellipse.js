@@ -27,6 +27,8 @@ var Ellipse = function Ellipse(options) {
 
     if (options.id) {
         this._id = options.id;
+    } else {
+        this._id = this.manager.getRandomId();
     }
     this._cx = options.cx;
     this._cy = options.cy;
@@ -360,6 +362,6 @@ CreateEllipse.prototype.stopDrag = function stopDrag() {
     //     delete this.line;
     //     return;
     // }
-    this.ellipse.setSelected(true);
     this.manager.addShape(this.ellipse);
+    this.ellipse.setSelected(true);
 };

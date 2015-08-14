@@ -88,6 +88,10 @@ $(function() {
         console.log("changed", shape.toJson());
     });
 
+    $("#shapesCanvas").bind("new:shape", function(event, shape){
+        console.log("new", shape.toJson());
+    });
+
     // Add some shapes to display
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",

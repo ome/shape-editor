@@ -23,9 +23,9 @@ $(function() {
         shapeManager.setColor(color);
     });
 
-    $("select[name='lineWidth']").change(function(){
-        var lineWidth = $(this).val();
-        shapeManager.setLineWidth(lineWidth);
+    $("select[name='strokeWidth']").change(function(){
+        var strokeWidth = $(this).val();
+        shapeManager.setStrokeWidth(strokeWidth);
     });
 
     var updateZoom = function updateZoom() {
@@ -66,7 +66,7 @@ $(function() {
         var shapesJson = [
           {"type": "Rectangle",
             "color": "ff00ff",
-            "lineWidth": 10,
+            "strokeWidth": 10,
             "x": 100, "y": 250,
             "width": 325, "height": 250},
           {"type": "Ellipse",
@@ -80,8 +80,8 @@ $(function() {
     $("#shapesCanvas").bind("change:selected", function(){
         var color = shapeManager.getColor();
         $("input[value='" + color + "']").prop('checked', 'checked');
-        var lineWidth = shapeManager.getLineWidth();
-        $("select[name='lineWidth']").val(lineWidth);
+        var strokeWidth = shapeManager.getStrokeWidth();
+        $("select[name='strokeWidth']").val(strokeWidth);
     });
 
     $("#shapesCanvas").bind("change:shape", function(event, shape){
@@ -96,7 +96,7 @@ $(function() {
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",
                                "color": "ffffff",
-                               "lineWidth": 6,
+                               "strokeWidth": 6,
                                "x": 200, "y": 150,
                                "width": 125, "height": 150});
 
@@ -107,13 +107,13 @@ $(function() {
 
     shapeManager.addShapeJson({"type": "Arrow",
                                "color": "ffff00",
-                               "lineWidth": 4,
+                               "strokeWidth": 4,
                                "x1": 25, "y1": 450,
                                "x2": 200, "y2": 400});
 
     shapeManager.addShapeJson({"type": "Line",
                                "color": "00ff00",
-                               "lineWidth": 2,
+                               "strokeWidth": 2,
                                "x1": 400, "y1": 400,
                                "x2": 250, "y2": 310});
 

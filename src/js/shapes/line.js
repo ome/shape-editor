@@ -35,7 +35,7 @@ var Line = function Line(options) {
     this._x2 = options.x2;
     this._y2 = options.y2;
     this._color = options.color;
-    this._lineWidth = options.lineWidth || 2;
+    this._strokeWidth = options.strokeWidth || 2;
     this.handle_wh = 6;
     this._selected = false;
     this._zoomFraction = 1;
@@ -91,7 +91,7 @@ Line.prototype.toJson = function toJson() {
         'x2': this._x2,
         'y1': this._y1,
         'y2': this._y2,
-        'lineWidth': this._lineWidth,
+        'strokeWidth': this._strokeWidth,
         'color': this._color
     };
     if (this._id) {
@@ -129,13 +129,13 @@ Line.prototype.getColor = function getColor() {
     return this._color;
 };
 
-Line.prototype.setLineWidth = function setLineWidth(lineWidth) {
-    this._lineWidth = lineWidth;
+Line.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
+    this._strokeWidth = strokeWidth;
     this.drawShape();
 };
 
-Line.prototype.getLineWidth = function getLineWidth() {
-    return this._lineWidth;
+Line.prototype.getStrokeWidth = function getStrokeWidth() {
+    return this._strokeWidth;
 };
 
 Line.prototype.destroy = function destroy() {
@@ -165,12 +165,12 @@ Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
         color = this._color,
-        lineW = this._lineWidth * this._zoomFraction;
+        strokeW = this._strokeWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
                        'stroke': '#' + color,
                        'fill': '#' + color,
-                       'stroke-width': lineW});
+                       'stroke-width': strokeW});
 
     if (this.isSelected()) {
         this.element.toFront();
@@ -305,7 +305,7 @@ var Arrow = function Arrow(options) {
             x2 = this._x2 * zf,
             y2 = this._y2 * zf;
 
-        var headSize = (this._lineWidth * 3) + 9,
+        var headSize = (this._strokeWidth * 3) + 9,
             dx = x2 - x1,
             dy = y2 - y1;
         headSize = headSize * this._zoomFraction;
@@ -348,7 +348,7 @@ var CreateLine = function CreateLine(options) {
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
     var color = this.manager.getColor(),
-        lineWidth = this.manager.getLineWidth(),
+        strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
     this.line = new Line({
@@ -358,7 +358,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y1': startY,
         'x2': startX,
         'y2': startY,
-        'lineWidth': lineWidth,
+        'strokeWidth': strokeWidth,
         'zoom': zoom,
         'color': color});
 };
@@ -388,7 +388,7 @@ var CreateArrow = function CreateArrow(options) {
 
     that.startDrag = function startDrag(startX, startY) {
         var color = this.manager.getColor(),
-            lineWidth = this.manager.getLineWidth(),
+            strokeWidth = this.manager.getStrokeWidth(),
             zoom = this.manager.getZoom();
 
         this.line = new Arrow({
@@ -398,7 +398,7 @@ var CreateArrow = function CreateArrow(options) {
             'y1': startY,
             'x2': startX,
             'y2': startY,
-            'lineWidth': lineWidth,
+            'strokeWidth': strokeWidth,
             'zoom': zoom,
             'color': color});
     };

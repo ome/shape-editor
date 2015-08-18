@@ -36,7 +36,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
     this._state = "SELECT";
     this._color = "ff0000";
-    this._lineWidth = 2;
+    this._strokeWidth = 2;
     this._orig_width = width;
     this._orig_height = height;
     this._zoom = 100;
@@ -192,17 +192,17 @@ ShapeManager.prototype.getColor = function getColor() {
     return this._color;
 };
 
-ShapeManager.prototype.setLineWidth = function setLineWidth(lineWidth) {
-    lineWidth = parseInt(lineWidth, 10);
-    this._lineWidth = lineWidth;
+ShapeManager.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
+    strokeWidth = parseInt(strokeWidth, 10);
+    this._strokeWidth = strokeWidth;
     var selected = this.getSelected();
     for (var s=0; s<selected.length; s++) {
-        selected[s].setLineWidth(lineWidth);
+        selected[s].setStrokeWidth(strokeWidth);
     }
 };
 
-ShapeManager.prototype.getLineWidth = function getLineWidth() {
-    return this._lineWidth;
+ShapeManager.prototype.getStrokeWidth = function getStrokeWidth() {
+    return this._strokeWidth;
 };
 
 ShapeManager.prototype.getShapesJson = function getShapesJson() {
@@ -227,11 +227,11 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
     var s = jsonShape,
         newShape,
         color = s.color || this.getColor(),
-        lineWidth = s.lineWidth || this.getLineWidth(),
+        strokeWidth = s.strokeWidth || this.getStrokeWidth(),
         zoom = this.getZoom(),
         options = {'manager': this,
                    'paper': this.paper,
-                   'lineWidth': lineWidth,
+                   'strokeWidth': strokeWidth,
                    'zoom': zoom,
                    'color': color};
     if (jsonShape.id) {
@@ -338,7 +338,7 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     if (shape) {
         shape.setSelected(true);
         this._color = shape.getColor();
-        this._lineWidth = shape.getLineWidth();
+        this._strokeWidth = shape.getStrokeWidth();
     }
     this.$el.trigger("change:selected");
 };

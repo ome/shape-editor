@@ -35,7 +35,7 @@ var Rect = function Rect(options) {
     this._width = options.width;
     this._height = options.height;
     this._color = options.color;
-    this._lineWidth = options.lineWidth || 2;
+    this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;
     if (options.zoom) {
@@ -86,7 +86,7 @@ Rect.prototype.toJson = function toJson() {
         'y': this._y,
         'width': this._width,
         'height': this._height,
-        'lineWidth': this._lineWidth,
+        'strokeWidth': this._strokeWidth,
         'color': this._color
     };
     if (this._id) {
@@ -138,13 +138,13 @@ Rect.prototype.getColor = function getColor() {
     return this._color;
 };
 
-Rect.prototype.setLineWidth = function setLineWidth(lineWidth) {
-    this._lineWidth = lineWidth;
+Rect.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
+    this._strokeWidth = strokeWidth;
     this.drawShape();
 };
 
-Rect.prototype.getLineWidth = function getLineWidth() {
-    return this._lineWidth;
+Rect.prototype.getStrokeWidth = function getStrokeWidth() {
+    return this._strokeWidth;
 };
 
 Rect.prototype.destroy = function destroy() {
@@ -155,7 +155,7 @@ Rect.prototype.destroy = function destroy() {
 Rect.prototype.drawShape = function drawShape() {
 
     var color = this._color,
-        lineW = this._lineWidth * this._zoomFraction;
+        lineW = this._strokeWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
         x = this._x * f,
@@ -332,9 +332,9 @@ var CreateRect = function CreateRect(options) {
 CreateRect.prototype.startDrag = function startDrag(startX, startY) {
 
     var color = this.manager.getColor(),
-        lineWidth = this.manager.getLineWidth(),
+        strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
-    // Also need to get lineWidth and zoom/size etc.
+    // Also need to get strokeWidth and zoom/size etc.
 
     this.startX = startX;
     this.startY = startY;
@@ -346,7 +346,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'width': 0,
         'height': 0,
-        'lineWidth': lineWidth,
+        'strokeWidth': strokeWidth,
         'zoom': zoom,
         'color': color});
 };

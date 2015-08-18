@@ -32,10 +32,10 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
     var self = this;
 
-    // Keep track of state, color etc
+    // Keep track of state, strokeColor etc
     this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
     this._state = "SELECT";
-    this._color = "ff0000";
+    this._strokeColor = "ff0000";
     this._strokeWidth = 2;
     this._orig_width = width;
     this._orig_height = height;
@@ -180,16 +180,16 @@ ShapeManager.prototype.getZoom = function getZoom(zoomPercent) {
     return this._zoom;
 };
 
-ShapeManager.prototype.setColor = function setColor(color) {
-    this._color = color;
+ShapeManager.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     var selected = this.getSelected();
     for (var s=0; s<selected.length; s++) {
-        selected[s].setColor(color);
+        selected[s].setStrokeColor(strokeColor);
     }
 };
 
-ShapeManager.prototype.getColor = function getColor() {
-    return this._color;
+ShapeManager.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 ShapeManager.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -226,14 +226,14 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
     
     var s = jsonShape,
         newShape,
-        color = s.color || this.getColor(),
+        strokeColor = s.strokeColor || this.getStrokeColor(),
         strokeWidth = s.strokeWidth || this.getStrokeWidth(),
         zoom = this.getZoom(),
         options = {'manager': this,
                    'paper': this.paper,
                    'strokeWidth': strokeWidth,
                    'zoom': zoom,
-                   'color': color};
+                   'strokeColor': strokeColor};
     if (jsonShape.id) {
         options.id = jsonShape.id;
     }
@@ -337,7 +337,7 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     this.clearSelected();
     if (shape) {
         shape.setSelected(true);
-        this._color = shape.getColor();
+        this._strokeColor = shape.getStrokeColor();
         this._strokeWidth = shape.getStrokeWidth();
     }
     this.$el.trigger("change:selected");

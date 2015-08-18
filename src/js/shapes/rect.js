@@ -34,7 +34,7 @@ var Rect = function Rect(options) {
     this._y = options.y;
     this._width = options.width;
     this._height = options.height;
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;
@@ -87,7 +87,7 @@ Rect.prototype.toJson = function toJson() {
         'width': this._width,
         'height': this._height,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -129,13 +129,13 @@ Rect.prototype.getCoords = function getCoords() {
             'height': this._height};
 };
 
-Rect.prototype.setColor = function setColor(color) {
-    this._color = color;
+Rect.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Rect.prototype.getColor = function getColor() {
-    return this._color;
+Rect.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 Rect.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -154,7 +154,7 @@ Rect.prototype.destroy = function destroy() {
 
 Rect.prototype.drawShape = function drawShape() {
 
-    var color = this._color,
+    var strokeColor = this._strokeColor,
         lineW = this._strokeWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
@@ -165,7 +165,7 @@ Rect.prototype.drawShape = function drawShape() {
 
     this.element.attr({'x':x, 'y':y,
                        'width':w, 'height':h,
-                       'stroke': '#' + color,
+                       'stroke': '#' + strokeColor,
                        'stroke-width': lineW});
 
     if (this.isSelected()) {
@@ -331,7 +331,7 @@ var CreateRect = function CreateRect(options) {
 
 CreateRect.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
     // Also need to get strokeWidth and zoom/size etc.
@@ -348,7 +348,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'height': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateRect.prototype.drag = function drag(dragX, dragY) {

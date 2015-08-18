@@ -36,7 +36,7 @@ var Ellipse = function Ellipse(options) {
     this._ry = options.ry;
     this._rotation = options.rotation || 0;
 
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;
@@ -90,7 +90,7 @@ Ellipse.prototype.toJson = function toJson() {
         'ry': this._ry,
         'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -118,13 +118,18 @@ Ellipse.prototype._handleMousedown = function _handleMousedown() {
 //             'y2': this._y2};
 // };
 
-Ellipse.prototype.setColor = function setColor(color) {
-    this._color = color;
+Ellipse.prototype.setColor = function setColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Ellipse.prototype.getColor = function getColor() {
-    return this._color;
+Ellipse.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
+};
+
+Ellipse.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
+    this.drawShape();
 };
 
 Ellipse.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -191,7 +196,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
 
 Ellipse.prototype.drawShape = function drawShape() {
 
-    var color = this._color,
+    var strokeColor = this._strokeColor,
         strokeW = this._strokeWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
@@ -204,7 +209,7 @@ Ellipse.prototype.drawShape = function drawShape() {
                        'cy': cy,
                        'rx': rx,
                        'ry': ry,
-                       'stroke': '#' + color,
+                       'stroke': '#' + strokeColor,
                        'stroke-width': strokeW});
     this.element.transform('r'+ this._rotation);
 
@@ -331,7 +336,7 @@ var CreateEllipse = function CreateEllipse(options) {
 
 CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
@@ -345,7 +350,7 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateEllipse.prototype.drag = function drag(dragX, dragY) {

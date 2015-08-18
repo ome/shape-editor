@@ -18,9 +18,9 @@ $(function() {
         shapeManager.setState(state);
     });
 
-    $("input[name='color']").click(function(){
-        var color = $(this).val();
-        shapeManager.setColor(color);
+    $("input[name='strokeColor']").click(function(){
+        var strokeColor = $(this).val();
+        shapeManager.setStrokeColor(strokeColor);
     });
 
     $("select[name='strokeWidth']").change(function(){
@@ -65,7 +65,7 @@ $(function() {
     $("button[name='setShapes']").click(function(){
         var shapesJson = [
           {"type": "Rectangle",
-            "color": "ff00ff",
+            "strokeColor": "ff00ff",
             "strokeWidth": 10,
             "x": 100, "y": 250,
             "width": 325, "height": 250},
@@ -78,8 +78,8 @@ $(function() {
     });
 
     $("#shapesCanvas").bind("change:selected", function(){
-        var color = shapeManager.getColor();
-        $("input[value='" + color + "']").prop('checked', 'checked');
+        var strokeColor = shapeManager.getStrokeColor();
+        $("input[value='" + strokeColor + "']").prop('checked', 'checked');
         var strokeWidth = shapeManager.getStrokeWidth();
         $("select[name='strokeWidth']").val(strokeWidth);
     });
@@ -95,7 +95,7 @@ $(function() {
     // Add some shapes to display
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",
-                               "color": "ffffff",
+                               "strokeColor": "ffffff",
                                "strokeWidth": 6,
                                "x": 200, "y": 150,
                                "width": 125, "height": 150});
@@ -106,13 +106,13 @@ $(function() {
                                "rotation": 45});
 
     shapeManager.addShapeJson({"type": "Arrow",
-                               "color": "ffff00",
+                               "strokeColor": "ffff00",
                                "strokeWidth": 4,
                                "x1": 25, "y1": 450,
                                "x2": 200, "y2": 400});
 
     shapeManager.addShapeJson({"type": "Line",
-                               "color": "00ff00",
+                               "strokeColor": "00ff00",
                                "strokeWidth": 2,
                                "x1": 400, "y1": 400,
                                "x2": 250, "y2": 310});

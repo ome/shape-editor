@@ -21,7 +21,7 @@ var Line = function Line(options) {
     this._y1 = options.y1;
     this._x2 = options.x2;
     this._y2 = options.y2;
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this.handle_wh = 6;
     this._selected = false;
@@ -79,7 +79,7 @@ Line.prototype.toJson = function toJson() {
         'y1': this._y1,
         'y2': this._y2,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -107,13 +107,13 @@ Line.prototype.getCoords = function getCoords() {
             'y2': this._y2};
 };
 
-Line.prototype.setColor = function setColor(color) {
-    this._color = color;
+Line.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Line.prototype.getColor = function getColor() {
-    return this._color;
+Line.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 Line.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -151,12 +151,12 @@ Line.prototype.setZoom = function setZoom(zoom) {
 Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
-        color = this._color,
+        strokeColor = this._strokeColor,
         strokeW = this._strokeWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
-                       'stroke': '#' + color,
-                       'fill': '#' + color,
+                       'stroke': '#' + strokeColor,
+                       'fill': '#' + strokeColor,
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
@@ -334,7 +334,7 @@ var CreateLine = function CreateLine(options) {
 
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
@@ -347,7 +347,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y2': startY,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateLine.prototype.drag = function drag(dragX, dragY) {
@@ -374,7 +374,7 @@ var CreateArrow = function CreateArrow(options) {
     var that = new CreateLine(options);
 
     that.startDrag = function startDrag(startX, startY) {
-        var color = this.manager.getColor(),
+        var strokeColor = this.manager.getStrokeColor(),
             strokeWidth = this.manager.getStrokeWidth(),
             zoom = this.manager.getZoom();
 
@@ -387,7 +387,7 @@ var CreateArrow = function CreateArrow(options) {
             'y2': startY,
             'strokeWidth': strokeWidth,
             'zoom': zoom,
-            'color': color});
+            'strokeColor': strokeColor});
     };
 
     return that;
@@ -411,7 +411,7 @@ var Rect = function Rect(options) {
     this._y = options.y;
     this._width = options.width;
     this._height = options.height;
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;
@@ -464,7 +464,7 @@ Rect.prototype.toJson = function toJson() {
         'width': this._width,
         'height': this._height,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -506,13 +506,13 @@ Rect.prototype.getCoords = function getCoords() {
             'height': this._height};
 };
 
-Rect.prototype.setColor = function setColor(color) {
-    this._color = color;
+Rect.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Rect.prototype.getColor = function getColor() {
-    return this._color;
+Rect.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 Rect.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -531,7 +531,7 @@ Rect.prototype.destroy = function destroy() {
 
 Rect.prototype.drawShape = function drawShape() {
 
-    var color = this._color,
+    var strokeColor = this._strokeColor,
         lineW = this._strokeWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
@@ -542,7 +542,7 @@ Rect.prototype.drawShape = function drawShape() {
 
     this.element.attr({'x':x, 'y':y,
                        'width':w, 'height':h,
-                       'stroke': '#' + color,
+                       'stroke': '#' + strokeColor,
                        'stroke-width': lineW});
 
     if (this.isSelected()) {
@@ -708,7 +708,7 @@ var CreateRect = function CreateRect(options) {
 
 CreateRect.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
     // Also need to get strokeWidth and zoom/size etc.
@@ -725,7 +725,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'height': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateRect.prototype.drag = function drag(dragX, dragY) {
@@ -770,7 +770,7 @@ var Ellipse = function Ellipse(options) {
     this._ry = options.ry;
     this._rotation = options.rotation || 0;
 
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;
@@ -824,7 +824,7 @@ Ellipse.prototype.toJson = function toJson() {
         'ry': this._ry,
         'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -852,13 +852,18 @@ Ellipse.prototype._handleMousedown = function _handleMousedown() {
 //             'y2': this._y2};
 // };
 
-Ellipse.prototype.setColor = function setColor(color) {
-    this._color = color;
+Ellipse.prototype.setColor = function setColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Ellipse.prototype.getColor = function getColor() {
-    return this._color;
+Ellipse.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
+};
+
+Ellipse.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
+    this.drawShape();
 };
 
 Ellipse.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -925,7 +930,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
 
 Ellipse.prototype.drawShape = function drawShape() {
 
-    var color = this._color,
+    var strokeColor = this._strokeColor,
         strokeW = this._strokeWidth * this._zoomFraction;
 
     var f = this._zoomFraction,
@@ -938,7 +943,7 @@ Ellipse.prototype.drawShape = function drawShape() {
                        'cy': cy,
                        'rx': rx,
                        'ry': ry,
-                       'stroke': '#' + color,
+                       'stroke': '#' + strokeColor,
                        'stroke-width': strokeW});
     this.element.transform('r'+ this._rotation);
 
@@ -1065,7 +1070,7 @@ var CreateEllipse = function CreateEllipse(options) {
 
 CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
@@ -1079,7 +1084,7 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateEllipse.prototype.drag = function drag(dragX, dragY) {
@@ -1115,10 +1120,10 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
     var self = this;
 
-    // Keep track of state, color etc
+    // Keep track of state, strokeColor etc
     this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
     this._state = "SELECT";
-    this._color = "ff0000";
+    this._strokeColor = "ff0000";
     this._strokeWidth = 2;
     this._orig_width = width;
     this._orig_height = height;
@@ -1263,16 +1268,16 @@ ShapeManager.prototype.getZoom = function getZoom(zoomPercent) {
     return this._zoom;
 };
 
-ShapeManager.prototype.setColor = function setColor(color) {
-    this._color = color;
+ShapeManager.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     var selected = this.getSelected();
     for (var s=0; s<selected.length; s++) {
-        selected[s].setColor(color);
+        selected[s].setStrokeColor(strokeColor);
     }
 };
 
-ShapeManager.prototype.getColor = function getColor() {
-    return this._color;
+ShapeManager.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 ShapeManager.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -1309,14 +1314,14 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
     
     var s = jsonShape,
         newShape,
-        color = s.color || this.getColor(),
+        strokeColor = s.strokeColor || this.getStrokeColor(),
         strokeWidth = s.strokeWidth || this.getStrokeWidth(),
         zoom = this.getZoom(),
         options = {'manager': this,
                    'paper': this.paper,
                    'strokeWidth': strokeWidth,
                    'zoom': zoom,
-                   'color': color};
+                   'strokeColor': strokeColor};
     if (jsonShape.id) {
         options.id = jsonShape.id;
     }
@@ -1420,7 +1425,7 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     this.clearSelected();
     if (shape) {
         shape.setSelected(true);
-        this._color = shape.getColor();
+        this._strokeColor = shape.getStrokeColor();
         this._strokeWidth = shape.getStrokeWidth();
     }
     this.$el.trigger("change:selected");

@@ -34,7 +34,7 @@ var Line = function Line(options) {
     this._y1 = options.y1;
     this._x2 = options.x2;
     this._y2 = options.y2;
-    this._color = options.color;
+    this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this.handle_wh = 6;
     this._selected = false;
@@ -92,7 +92,7 @@ Line.prototype.toJson = function toJson() {
         'y1': this._y1,
         'y2': this._y2,
         'strokeWidth': this._strokeWidth,
-        'color': this._color
+        'strokeColor': this._strokeColor
     };
     if (this._id) {
         rv.id = this._id;
@@ -120,13 +120,13 @@ Line.prototype.getCoords = function getCoords() {
             'y2': this._y2};
 };
 
-Line.prototype.setColor = function setColor(color) {
-    this._color = color;
+Line.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
+    this._strokeColor = strokeColor;
     this.drawShape();
 };
 
-Line.prototype.getColor = function getColor() {
-    return this._color;
+Line.prototype.getStrokeColor = function getStrokeColor() {
+    return this._strokeColor;
 };
 
 Line.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -164,12 +164,12 @@ Line.prototype.setZoom = function setZoom(zoom) {
 Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
-        color = this._color,
+        strokeColor = this._strokeColor,
         strokeW = this._strokeWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
-                       'stroke': '#' + color,
-                       'fill': '#' + color,
+                       'stroke': '#' + strokeColor,
+                       'fill': '#' + strokeColor,
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
@@ -347,7 +347,7 @@ var CreateLine = function CreateLine(options) {
 
 CreateLine.prototype.startDrag = function startDrag(startX, startY) {
 
-    var color = this.manager.getColor(),
+    var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
@@ -360,7 +360,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y2': startY,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'color': color});
+        'strokeColor': strokeColor});
 };
 
 CreateLine.prototype.drag = function drag(dragX, dragY) {
@@ -387,7 +387,7 @@ var CreateArrow = function CreateArrow(options) {
     var that = new CreateLine(options);
 
     that.startDrag = function startDrag(startX, startY) {
-        var color = this.manager.getColor(),
+        var strokeColor = this.manager.getStrokeColor(),
             strokeWidth = this.manager.getStrokeWidth(),
             zoom = this.manager.getZoom();
 
@@ -400,7 +400,7 @@ var CreateArrow = function CreateArrow(options) {
             'y2': startY,
             'strokeWidth': strokeWidth,
             'zoom': zoom,
-            'color': color});
+            'strokeColor': strokeColor});
     };
 
     return that;

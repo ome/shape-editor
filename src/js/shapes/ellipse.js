@@ -209,7 +209,7 @@ Ellipse.prototype.drawShape = function drawShape() {
                        'cy': cy,
                        'rx': rx,
                        'ry': ry,
-                       'stroke': '#' + strokeColor,
+                       'stroke': strokeColor,
                        'stroke-width': strokeW});
     this.element.transform('r'+ this._rotation);
 

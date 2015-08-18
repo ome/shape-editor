@@ -168,8 +168,8 @@ Line.prototype.drawShape = function drawShape() {
         strokeW = this._strokeWidth * this._zoomFraction;
 
     this.element.attr({'path': p,
-                       'stroke': '#' + strokeColor,
-                       'fill': '#' + strokeColor,
+                       'stroke': strokeColor,
+                       'fill': strokeColor,
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {

@@ -165,7 +165,7 @@ Rect.prototype.drawShape = function drawShape() {
 
     this.element.attr({'x':x, 'y':y,
                        'width':w, 'height':h,
-                       'stroke': '#' + strokeColor,
+                       'stroke': strokeColor,
                        'stroke-width': lineW});
 
     if (this.isSelected()) {

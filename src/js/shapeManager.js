@@ -31,6 +31,7 @@
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
 
     var self = this;
+    options = options || {};
 
     // Keep track of state, strokeColor etc
     this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
@@ -40,6 +41,8 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this._orig_width = width;
     this._orig_height = height;
     this._zoom = 100;
+    // Don't allow editing of shapes - no drag/click events
+    this.canEdit = !options.readOnly;
 
     // Set up Raphael paper...
     this.paper = Raphael(elementId, width, height);
@@ -57,25 +60,29 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
                           'cursor': 'crosshair'});
-    this.newShapeBg.drag(
-        function(){
-            self.drag.apply(self, arguments);
-        },
-        function(){
-            self.startDrag.apply(self, arguments);
-        },
-        function(){
-            self.stopDrag.apply(self, arguments);
-        });
+    if (this.canEdit) {
+        this.newShapeBg.drag(
+            function(){
+                self.drag.apply(self, arguments);
+            },
+            function(){
+                self.startDrag.apply(self, arguments);
+            },
+            function(){
+                self.stopDrag.apply(self, arguments);
+            });
 
-    this.shapeFactories = {
-        "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
-        "ELLIPSE": new CreateEllipse({'manager': this, 'paper': this.paper}),
-        "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
-        "ARROW": new CreateArrow({'manager': this, 'paper': this.paper})
-    };
+        this.shapeFactories = {
+            "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
+            "ELLIPSE": new CreateEllipse({'manager': this, 'paper': this.paper}),
+            "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
+            "ARROW": new CreateArrow({'manager': this, 'paper': this.paper})
+        };
 
-    this.createShape = this.shapeFactories.LINE;
+        this.createShape = this.shapeFactories.LINE;
+    } else {
+        this.shapeFactories = {};
+    }
 };
 
 ShapeManager.prototype.startDrag = function startDrag(x, y, event){

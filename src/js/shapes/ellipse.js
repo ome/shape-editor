@@ -49,32 +49,34 @@ var Ellipse = function Ellipse(options) {
     this.element.attr({'fill-opacity': 0.01, 'fill': '#fff'});
 
     // Drag handling of ellipse
-    this.element.drag(
-        function(dx, dy) {
-            // DRAG, update location and redraw
-            dx = dx / self._zoomFraction;
-            dy = dy / self._zoomFraction;
-            self._cx = dx+this.ox;
-            self._cy = this.oy+dy;
-            self.drawShape();
-            return false;
-        },
-        function() {
-            // START drag: note the start location
-            self._handleMousedown();
-            this.ox = self._cx;
-            this.oy = self._cy;
-            return false;
-        },
-        function() {
-            // STOP
-            // notify changed if moved
-            if (this.ox !== self._cx || this.oy !== self._cy) {
-                self.manager.notifyShapeChanged(self);
+    if (this.manager.canEdit) {
+        this.element.drag(
+            function(dx, dy) {
+                // DRAG, update location and redraw
+                dx = dx / self._zoomFraction;
+                dy = dy / self._zoomFraction;
+                self._cx = dx+this.ox;
+                self._cy = this.oy+dy;
+                self.drawShape();
+                return false;
+            },
+            function() {
+                // START drag: note the start location
+                self._handleMousedown();
+                this.ox = self._cx;
+                this.oy = self._cy;
+                return false;
+            },
+            function() {
+                // STOP
+                // notify changed if moved
+                if (this.ox !== self._cx || this.oy !== self._cy) {
+                    self.manager.notifyShapeChanged(self);
+                }
+                return false;
             }
-            return false;
-        }
-    );
+        );
+    }
 
     this.createHandles();
 
@@ -292,11 +294,13 @@ Ellipse.prototype.createHandles = function createHandles() {
         handle.h_id = key;
         handle.line = self;
 
-        handle.drag(
-            _handle_drag(),
-            _handle_drag_start(),
-            _handle_drag_end()
-        );
+        if (this.manager.canEdit) {
+            handle.drag(
+                _handle_drag(),
+                _handle_drag_start(),
+                _handle_drag_end()
+            );
+        }
         self.handles.push(handle);
     }
 

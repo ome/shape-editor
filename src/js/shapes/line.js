@@ -46,38 +46,40 @@ var Line = function Line(options) {
     this.element = this.paper.path();
 
     // Drag handling of line
-    this.element.drag(
-        function(dx, dy) {
-            // DRAG, update location and redraw
-            dx = dx / self._zoomFraction;
-            dy = dy / self._zoomFraction;
-            self._x1 = this.old.x1 + dx;
-            self._y1 = this.old.y1 + dy;
-            self._x2 = this.old.x2 + dx;
-            self._y2 = this.old.y2 + dy;
-            self.drawShape();
-            return false;
-        },
-        function() {
-            // START drag: note the location of all points
-            self._handleMousedown();
-            this.old = {
-                'x1': self._x1,
-                'x2': self._x2,
-                'y1': self._y1,
-                'y2': self._y2
-            };
-            return false;
-        },
-        function() {
-            // STOP
-            // notify manager if line has moved
-            if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1) {
-                self.manager.notifyShapeChanged(self);
+    if (this.manager.canEdit) {
+        this.element.drag(
+            function(dx, dy) {
+                // DRAG, update location and redraw
+                dx = dx / self._zoomFraction;
+                dy = dy / self._zoomFraction;
+                self._x1 = this.old.x1 + dx;
+                self._y1 = this.old.y1 + dy;
+                self._x2 = this.old.x2 + dx;
+                self._y2 = this.old.y2 + dy;
+                self.drawShape();
+                return false;
+            },
+            function() {
+                // START drag: note the location of all points
+                self._handleMousedown();
+                this.old = {
+                    'x1': self._x1,
+                    'x2': self._x2,
+                    'y1': self._y1,
+                    'y2': self._y2
+                };
+                return false;
+            },
+            function() {
+                // STOP
+                // notify manager if line has moved
+                if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1) {
+                    self.manager.notifyShapeChanged(self);
+                }
+                return false;
             }
-            return false;
-        }
-    );
+        );
+    }
 
     this.createHandles();
 
@@ -261,11 +263,13 @@ Line.prototype.createHandles = function createHandles() {
         handle.h_id = key;
         handle.line = self;
 
-        handle.drag(
-            _handle_drag(),
-            _handle_drag_start(),
-            _handle_drag_end()
-        );
+        if (this.manager.canEdit) {
+            handle.drag(
+                _handle_drag(),
+                _handle_drag_start(),
+                _handle_drag_end()
+            );
+        }
         self.handles.push(handle);
     }
     self.handles.attr(handleAttrs).hide();     // show on selection

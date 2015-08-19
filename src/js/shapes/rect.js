@@ -46,33 +46,35 @@ var Rect = function Rect(options) {
     this.element = this.paper.rect();
     this.element.attr({'fill-opacity': 0.01, 'fill': '#fff'});
 
-    // Drag handling of element
-    this.element.drag(
-        function(dx, dy) {
-            // DRAG, update location and redraw
-            dx = dx / self._zoomFraction;
-            dy = dy / self._zoomFraction;
-            self._x = dx+this.ox;
-            self._y = this.oy+dy;
-            self.drawShape();
-            return false;
-        },
-        function() {
-            self._handleMousedown();
-            // START drag: note the location of this handle
-            this.ox = self._x;
-            this.oy = self._y;
-            return false;
-        },
-        function() {
-            // STOP
-            // notify manager if rectangle has moved
-            if (self._x !== this.ox || self._y !== this.oy) {
-                self.manager.notifyShapeChanged(self);
+    if (this.manager.canEdit) {
+        // Drag handling of element
+        this.element.drag(
+            function(dx, dy) {
+                // DRAG, update location and redraw
+                dx = dx / self._zoomFraction;
+                dy = dy / self._zoomFraction;
+                self._x = dx+this.ox;
+                self._y = this.oy+dy;
+                self.drawShape();
+                return false;
+            },
+            function() {
+                self._handleMousedown();
+                // START drag: note the location of this handle
+                this.ox = self._x;
+                this.oy = self._y;
+                return false;
+            },
+            function() {
+                // STOP
+                // notify manager if rectangle has moved
+                if (self._x !== this.ox || self._y !== this.oy) {
+                    self.manager.notifyShapeChanged(self);
+                }
+                return false;
             }
-            return false;
-        }
-    );
+        );
+    }
 
     this.createHandles();
 
@@ -309,11 +311,13 @@ Rect.prototype.createHandles = function createHandles() {
         handle.h_id = key;
         handle.rect = self;
 
-        handle.drag(
-            _handle_drag(),
-            _handle_drag_start(),
-            _handle_drag_end()
-        );
+        if (self.manager.canEdit) {
+            handle.drag(
+                _handle_drag(),
+                _handle_drag_start(),
+                _handle_drag_end()
+            );
+        }
         // handle.mousedown(_stop_event_propagation);
         self.handles.push(handle);
     }

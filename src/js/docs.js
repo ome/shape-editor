@@ -6,7 +6,14 @@ $(function() {
     var WIDTH = 512,
         HEIGHT = 512;
 
-    var shapeManager = new ShapeManager("shapesCanvas", WIDTH, HEIGHT);
+    var options = {};
+
+    // We can choose to display shapes only - No editing
+    // options = {'readOnly': true};
+
+    var shapeManager = new ShapeManager("shapesCanvas",
+                                        WIDTH, HEIGHT,
+                                        options);
 
     var zoomPercent = 100;
 
@@ -95,7 +102,7 @@ $(function() {
     // Add some shapes to display
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",
-                               "strokeColor": "#ffffff",
+                               "strokeColor": "#ff00ff",
                                "strokeWidth": 6,
                                "x": 200, "y": 150,
                                "width": 125, "height": 150});

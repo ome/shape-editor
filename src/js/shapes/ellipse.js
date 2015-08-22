@@ -100,25 +100,32 @@ Ellipse.prototype.toJson = function toJson() {
     return rv;
 };
 
+Ellipse.prototype.compareCoords = function compareCoords(json) {
+
+    var selfJson = this.toJson(),
+        match = true;
+    if (json.type !== selfJson.type) {
+        return false;
+    }
+    ['cx', 'cy', 'rx', 'ry', 'rotation'].forEach(function(c){
+        if (json[c] !== selfJson[c]) {
+            match = false;
+        }
+    });
+    return match;
+};
+
+// Useful for pasting json with an offset
+Ellipse.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
+    json.cx = json.cx + dx;
+    json.cy = json.cy + dy;
+    return json;
+};
+
 // handle start of drag by selecting this shape
 Ellipse.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);
 };
-
-// Ellipse.prototype.setCoords = function setCoords(coords) {
-//     this._x1 = coords.x1 || this._x1;
-//     this._y1 = coords.y1 || this._y1;
-//     this._x2 = coords.x2 || this._x2;
-//     this._y2 = coords.y2 || this._y2;
-//     this.drawShape();
-// };
-
-// Ellipse.prototype.getCoords = function getCoords() {
-//     return {'x1': this._x1,
-//             'y1': this._y1,
-//             'x2': this._x2,
-//             'y2': this._y2};
-// };
 
 Ellipse.prototype.setColor = function setColor(strokeColor) {
     this._strokeColor = strokeColor;

@@ -228,6 +228,43 @@ ShapeManager.prototype.setShapesJson = function setShapesJson(jsonShapes) {
     });
 };
 
+ShapeManager.prototype.findShapeAtCoords = function findShapeAtCoords(jsonShape) {
+
+    var thisShapes = this.getShapes();
+    for (var i=0; i<thisShapes.length; i++){
+        if (thisShapes[i].compareCoords(jsonShape)) {
+            return thisShapes[i];
+        }
+    }
+    return false;
+};
+
+// Add new shapes from json but, IF it matches existing shape - offset a bit
+ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes) {
+    var self = this;
+
+    // For each shape we want to paste...
+    jsonShapes.forEach(function(s){
+        // check if a shape is at the same coordinates...
+        var match = self.findShapeAtCoords(s);
+        // if so, keep offsetting until we find a spot...
+        while(match) {
+            s = $.extend({}, s);
+            s = match.offsetCoords(s, 30, 20);
+            match = self.findShapeAtCoords(s);
+        }
+        // the paste!
+        self.addShapeJson(s);
+    });
+};
+
+ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes) {
+    var self = this;
+    jsonShapes.forEach(function(s){
+        self.addShapeJson(s);
+    });
+};
+
 // Add a json shape object
 ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
     
@@ -306,6 +343,16 @@ ShapeManager.prototype.getSelected = function getSelected() {
         }
     }
     return selected;
+};
+
+ShapeManager.prototype.getSelectedShapesJson = function getShapesJson() {
+    var data = [];
+    this.getShapes().forEach(function(s){
+        if (s.isSelected()) {
+            data.push(s.toJson());
+        }
+    });
+    return data;
 };
 
 ShapeManager.prototype.deleteAll = function deleteAll() {

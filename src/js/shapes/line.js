@@ -102,6 +102,30 @@ Line.prototype.toJson = function toJson() {
     return rv;
 };
 
+Line.prototype.compareCoords = function compareCoords(json) {
+
+    var selfJson = this.toJson(),
+        match = true;
+    if (json.type !== selfJson.type) {
+        return false;
+    }
+    ['x1', 'y1', 'x2', 'y2'].forEach(function(c){
+        if (json[c] !== selfJson[c]) {
+            match = false;
+        }
+    });
+    return match;
+};
+
+// Useful for pasting json with an offset
+Line.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
+    json.x1 = json.x1 + dx;
+    json.y1 = json.y1 + dy;
+    json.x2 = json.x2 + dx;
+    json.y2 = json.y2 + dy;
+    return json;
+};
+
 // handle start of drag by selecting this shape
 Line.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);

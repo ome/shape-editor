@@ -97,6 +97,27 @@ Rect.prototype.toJson = function toJson() {
     return rv;
 };
 
+Rect.prototype.compareCoords = function compareCoords(json) {
+    if (json.type !== "Rectangle") {
+        return false;
+    }
+    var selfJson = this.toJson(),
+        match = true;
+    ['x', 'y', 'width', 'height'].forEach(function(c){
+        if (json[c] !== selfJson[c]) {
+            match = false;
+        }
+    });
+    return match;
+};
+
+// Useful for pasting json with an offset
+Rect.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
+    json.x = json.x + dx;
+    json.y = json.y + dy;
+    return json;
+};
+
 // handle start of drag by selecting this shape
 Rect.prototype._handleMousedown = function _handleMousedown() {
     this.manager.selectShape(this);

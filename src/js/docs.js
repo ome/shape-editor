@@ -8,6 +8,8 @@ $(function() {
 
     var options = {};
 
+    var shapesClipboard = [];
+
     // We can choose to display shapes only - No editing
     // options = {'readOnly': true};
 
@@ -58,6 +60,14 @@ $(function() {
 
     $("button[name='deleteAll']").click(function(){
         shapeManager.deleteAll();
+    });
+
+    $("button[name='copyShapes']").click(function(){
+        shapesClipboard = shapeManager.getSelectedShapesJson();
+    });
+
+    $("button[name='pasteShapes']").click(function(){
+        shapeManager.pasteShapesJson(shapesClipboard);
     });
 
     $("button[name='getShapes']").click(function(){

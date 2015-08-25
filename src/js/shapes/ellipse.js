@@ -371,13 +371,14 @@ CreateEllipse.prototype.drag = function drag(dragX, dragY) {
 
 CreateEllipse.prototype.stopDrag = function stopDrag() {
 
-    // var coords = this.ellipse.getCoords();
-    // if ((Math.abs(coords.x1 - coords.x2) < 2) &&
-    //         (Math.abs(coords.y1 - coords.y2) < 2)) {
-    //     this.line.destroy();
-    //     delete this.line;
-    //     return;
-    // }
-    this.manager.addShape(this.ellipse);
+    // Don't create ellipse of zero size (click, without drag)
+    var coords = this.ellipse.toJson();
+    if (coords.rx < 2) {
+        this.ellipse.destroy();
+        delete this.ellipse;
+        return;
+    }
+    // on the 'new:shape' trigger, this shape will already be selected
     this.ellipse.setSelected(true);
+    this.manager.addShape(this.ellipse);
 };

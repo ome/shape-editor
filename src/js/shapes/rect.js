@@ -394,6 +394,7 @@ CreateRect.prototype.stopDrag = function stopDrag() {
         delete this.rect;
         return;
     }
-    this.manager.addShape(this.rect);
+    // on the 'new:shape' trigger, this shape will already be selected
     this.rect.setSelected(true);
+    this.manager.addShape(this.rect);
 };

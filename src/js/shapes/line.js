@@ -405,8 +405,9 @@ CreateLine.prototype.stopDrag = function stopDrag() {
         delete this.line;
         return;
     }
-    this.manager.addShape(this.line);
+    // on the 'new:shape' trigger, this shape will already be selected
     this.line.setSelected(true);
+    this.manager.addShape(this.line);
 };
 
 

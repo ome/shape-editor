@@ -376,11 +376,13 @@ ShapeManager.prototype.deleteSelected = function getSelected() {
     this.$el.trigger("change:selected");
 };
 
-ShapeManager.prototype.clearSelected = function clearSelected() {
+ShapeManager.prototype.clearSelected = function clearSelected(silent) {
     for (var i=0; i<this._shapes.length; i++) {
         this._shapes[i].setSelected(false);
     }
-    this.$el.trigger("change:selected");
+    if (!silent) {
+        this.$el.trigger("change:selected");
+    }
 };
 
 // select shape: 'shape' can be shape object or ID
@@ -388,7 +390,8 @@ ShapeManager.prototype.selectShape = function selectShape(shape) {
     if (typeof shape === "number") {
         shape = this.getShape(shape);
     }
-    this.clearSelected();
+    // Clear selected with silent:true, since we notify again below
+    this.clearSelected(true);
     if (shape) {
         shape.setSelected(true);
         this._strokeColor = shape.getStrokeColor();

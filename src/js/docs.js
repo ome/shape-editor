@@ -107,6 +107,7 @@ $(function() {
 
     $("#shapesCanvas").bind("new:shape", function(event, shape){
         console.log("new", shape.toJson());
+        console.log("selected", shapeManager.getSelectedShapesJson());
     });
 
     // Add some shapes to display

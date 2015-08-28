@@ -129,7 +129,13 @@ $(function() {
                                "x1": 25, "y1": 450,
                                "x2": 200, "y2": 400});
 
-    shapeManager.addShapeJson({"type": "Line",
+    shapeManager.addShapeJson({"type": "Arrow",
+                               "strokeColor": "#ffff00",
+                               "strokeWidth": 10,
+                               "x1": 25, "y1": 250,
+                               "x2": 200, "y2": 200});
+
+    shapeManager.addShapeJson({"type": "Arrow",
                                "strokeColor": "#00ff00",
                                "strokeWidth": 2,
                                "x1": 400, "y1": 400,

@@ -187,11 +187,15 @@ Line.prototype.setZoom = function setZoom(zoom) {
     this.drawShape();
 };
 
+Line.prototype._getLineWidth = function _getLineWidth() {
+    return this._strokeWidth;
+};
+
 Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
         strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth * this._zoomFraction;
+        strokeW = this._getLineWidth() * this._zoomFraction;
 
     this.element.attr({'path': p,
                        'stroke': strokeColor,
@@ -325,21 +329,29 @@ var Arrow = function Arrow(options) {
         return lineJson;
     };
 
+    // Since we draw arrow by outline, always use thin line
+    that._getLineWidth = function _getLineWidth() {
+        return 0;
+    };
+
     that.getPath = function getPath() {
+
+        // We want the arrow tip to be precisely at x2, y2, so we
+        // can't have a fat line at x2, y2. Instead we need to
+        // trace the whole outline of the arrow with a thin line
 
         var zf = this._zoomFraction,
             x1 = this._x1 * zf,
             y1 = this._y1 * zf,
             x2 = this._x2 * zf,
-            y2 = this._y2 * zf;
+            y2 = this._y2 * zf,
+            w = this._strokeWidth * zf * 0.5;
 
-        var headSize = (this._strokeWidth * 3) + 9,
+        var headSize = (this._strokeWidth * 5) + 9,
             dx = x2 - x1,
             dy = y2 - y1;
         headSize = headSize * this._zoomFraction;
 
-
-        var linePath = "M" + x1 + " " + y1 + "L" + x2 + " " + y2;
         var lineAngle = Math.atan(dx / dy);
         var f = (dy < 0 ? 1 : -1);
 
@@ -347,12 +359,30 @@ var Arrow = function Arrow(options) {
         var arrowPoint1x = x2 + (f * Math.sin(lineAngle - 0.4) * headSize),
             arrowPoint1y = y2 + (f * Math.cos(lineAngle - 0.4) * headSize),
             arrowPoint2x = x2 + (f * Math.sin(lineAngle + 0.4) * headSize),
-            arrowPoint2y = y2 + (f * Math.cos(lineAngle + 0.4) * headSize);
+            arrowPoint2y = y2 + (f * Math.cos(lineAngle + 0.4) * headSize),
+            arrowPointMidx = x2 + (f * Math.sin(lineAngle) * headSize * 0.5),
+            arrowPointMidy = y2 + (f * Math.cos(lineAngle) * headSize * 0.5);
 
-        // Full path goes around the head, past the tip and back to tip so that the tip is 'pointy'
-        // and 'fill' is not from a head corner to the start of arrow.
+        var lineOffsetX = f * Math.cos(lineAngle) * w,
+            lineOffsetY = f * Math.sin(lineAngle) * w,
+            startLeftX = x1 - lineOffsetX,
+            startLeftY = y1 + lineOffsetY,
+            startRightX = x1 + lineOffsetX,
+            startRightY = y1 - lineOffsetY,
+            endLeftX = arrowPointMidx - lineOffsetX,
+            endLeftY = arrowPointMidy + lineOffsetY,
+            endRightX = arrowPointMidx + lineOffsetX,
+            endRightY = arrowPointMidy - lineOffsetY;
+
+        // Outline goes around the 'line' (starting in middle of arrowhead)
+        var linePath = "M" + endRightX + " " + endRightY + "L" + endLeftX + " " + endLeftY;
+        linePath = linePath + "L" + startLeftX + " " + startLeftY + "L" + startRightX + " " + startRightY;
+        linePath = linePath + "L" + endRightX + " " + endRightY;
+
+        // Then goes around the arrow head enough to fill it all in!
         var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
         arrowPath = arrowPath + "L" + x2 + " " + y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + x2 + " " + y2;
+        arrowPath = arrowPath + "L" + arrowPoint1x + " " + arrowPoint1y;
         return arrowPath;
     };
 

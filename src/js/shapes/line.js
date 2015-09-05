@@ -169,6 +169,20 @@ Line.prototype.destroy = function destroy() {
     this.handles.remove();
 };
 
+Line.prototype.intersectRegion = function intersectRegion(region) {
+    var path = this.manager.regionToPath(region, this._zoomFraction * 100);
+    var f = this._zoomFraction,
+        x = parseInt(this._x1 * f, 10),
+        y = parseInt(this._y1 * f, 10);
+
+    if (Raphael.isPointInsidePath(path, x, y)) {
+        return true;
+    }
+    var path2 = this.getPath(),
+        i = Raphael.pathIntersection(path, path2);
+    return (i.length > 0);
+};
+
 Line.prototype.getPath = function getPath() {
     var f = this._zoomFraction,
         x1 = this._x1 * f,
@@ -375,14 +389,14 @@ var Arrow = function Arrow(options) {
             endRightY = arrowPointMidy - lineOffsetY;
 
         // Outline goes around the 'line' (starting in middle of arrowhead)
-        var linePath = "M" + endRightX + " " + endRightY + "L" + endLeftX + " " + endLeftY;
-        linePath = linePath + "L" + startLeftX + " " + startLeftY + "L" + startRightX + " " + startRightY;
-        linePath = linePath + "L" + endRightX + " " + endRightY;
+        var linePath = "M" + endRightX + " " + endRightY + " L" + endLeftX + " " + endLeftY;
+        linePath = linePath + " L" + startLeftX + " " + startLeftY + " L" + startRightX + " " + startRightY;
+        linePath = linePath + " L" + endRightX + " " + endRightY;
 
         // Then goes around the arrow head enough to fill it all in!
-        var arrowPath = linePath + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + arrowPoint2x + " " + arrowPoint2y;
-        arrowPath = arrowPath + "L" + x2 + " " + y2 + "L" + arrowPoint1x + " " + arrowPoint1y + "L" + x2 + " " + y2;
-        arrowPath = arrowPath + "L" + arrowPoint1x + " " + arrowPoint1y;
+        var arrowPath = linePath + " L" + arrowPoint1x + " " + arrowPoint1y + " L" + arrowPoint2x + " " + arrowPoint2y;
+        arrowPath = arrowPath + " L" + x2 + " " + y2 + " L" + arrowPoint1x + " " + arrowPoint1y + " L" + x2 + " " + y2;
+        arrowPath = arrowPath + " L" + arrowPoint1x + " " + arrowPoint1y;
         return arrowPath;
     };
 

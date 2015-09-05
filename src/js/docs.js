@@ -67,7 +67,11 @@ $(function() {
     });
 
     $("button[name='pasteShapes']").click(function(){
-        shapeManager.pasteShapesJson(shapesClipboard);
+        // paste shapes, constraining to the image coords
+        var p = shapeManager.pasteShapesJson(shapesClipboard, true);
+        if (!p) {
+            console.log("Shape could not be pasted: outside view port");
+        }
     });
 
     $("button[name='getShapes']").click(function(){

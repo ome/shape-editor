@@ -97,6 +97,49 @@ Rect.prototype.toJson = function toJson() {
     return rv;
 };
 
+Rect.prototype.intersectRegion = function intersectRegion(region) {
+    var path = this.manager.regionToPath(region, this._zoomFraction * 100);
+    var f = this._zoomFraction,
+        x = parseInt(this._x * f, 10),
+        y = parseInt(this._y * f, 10);
+    
+    if (Raphael.isPointInsidePath(path, x, y)) {
+        return true;
+    }
+    var path2 = this.getPath(),
+        i = Raphael.pathIntersection(path, path2);
+    return (i.length > 0);
+};
+
+// Useful for testing intersection of paths
+Rect.prototype.getPath = function getPath() {
+
+    var f = this._zoomFraction,
+        x = parseInt(this._x * f, 10),
+        y = parseInt(this._y * f, 10),
+        width = parseInt(this._width * f, 10),
+        height = parseInt(this._height * f, 10);
+
+    var cornerPoints = [
+                [x, y],
+                [x + width, y],
+                [x + width, y + height],
+                [x, y + height]
+            ];
+    var path = [];
+    for (var i = 0; i <= 3; i++) {
+        if (i === 0) {
+            path.push("M" + cornerPoints[0].join(","));
+        }
+        if (i < 3) {
+            path.push("L" + cornerPoints[i + 1].join(","));
+        } else {
+            path.push("Z");
+        }
+    }
+    return path.join(",");
+};
+
 Rect.prototype.compareCoords = function compareCoords(json) {
     if (json.type !== "Rectangle") {
         return false;

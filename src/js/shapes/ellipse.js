@@ -155,9 +155,73 @@ Ellipse.prototype.destroy = function destroy() {
     this.handles.remove();
 };
 
-// Ellipse.prototype.getPath = function getPath() {
-//     return "M" + this._x1 + " " + this._y1 + "L" + this._x2 + " " + this._y2;
-// };
+Ellipse.prototype.intersectRegion = function intersectRegion(region) {
+    var path = this.manager.regionToPath(region, this._zoomFraction * 100);
+    var f = this._zoomFraction,
+        x = parseInt(this._cx * f, 10),
+        y = parseInt(this._cy * f, 10);
+
+    if (Raphael.isPointInsidePath(path, x, y)) {
+        return true;
+    }
+    var path2 = this.getPath(),
+        i = Raphael.pathIntersection(path, path2);
+    return (i.length > 0);
+};
+
+Ellipse.prototype.getPath = function getPath() {
+
+    // Adapted from https://github.com/poilu/raphael-boolean
+    var a = this.element.attrs,
+        rx = a.rx,
+        ry = a.ry,
+        cornerPoints = [
+            [a.cx - rx, a.cy - ry],
+            [a.cx + rx, a.cy - ry],
+            [a.cx + rx, a.cy + ry],
+            [a.cx - rx, a.cy + ry]
+        ],
+        path = [];
+    var radiusShift = [
+        [
+            [0, 1],
+            [1, 0]
+        ],
+        [
+            [-1, 0],
+            [0, 1]
+        ],
+        [
+            [0, -1],
+            [-1, 0]
+        ],
+        [
+            [1, 0],
+            [0, -1]
+        ]
+    ];
+
+    //iterate all corners
+    for (var i = 0; i <= 3; i++) {
+        //insert starting point
+        if (i === 0) {
+            path.push(["M", cornerPoints[0][0], cornerPoints[0][1] + ry]);
+        }
+
+        //insert "curveto" (radius factor .446 is taken from Inkscape)
+        var c1 = [cornerPoints[i][0] + radiusShift[i][0][0] * rx * 0.446, cornerPoints[i][1] + radiusShift[i][0][1] * ry * 0.446];
+        var c2 = [cornerPoints[i][0] + radiusShift[i][1][0] * rx * 0.446, cornerPoints[i][1] + radiusShift[i][1][1] * ry * 0.446];
+        var p2 = [cornerPoints[i][0] + radiusShift[i][1][0] * rx, cornerPoints[i][1] + radiusShift[i][1][1] * ry];
+        path.push(["C", c1[0], c1[1], c2[0], c2[1], p2[0], p2[1]]);
+    }
+    path.push(["Z"]);
+    path = path.join(",").replace(/,?([achlmqrstvxz]),?/gi, "$1");
+
+    if (this._rotation !== 0) {
+        path = Raphael.transformPath(path, "r" + this._rotation);
+    }
+    return path;
+};
 
 Ellipse.prototype.isSelected = function isSelected() {
     return this._selected;

@@ -228,6 +228,20 @@ ShapeManager.prototype.setShapesJson = function setShapesJson(jsonShapes) {
     });
 };
 
+ShapeManager.prototype.regionToPath = function regionToPath(region, zoom) {
+    var f = zoom ? zoom/100: this._zoom/100,
+        x = parseInt(region.x * f, 10),
+        y = parseInt(region.y * f, 10),
+        width = parseInt(region.width * f, 10),
+        height = parseInt(region.height * f, 10);
+
+    return [["M" + x + "," + y],
+                ["L" + (x + width) + "," + y],
+                ["L" + (x + width) + "," + (y + height)],
+                ["L" + x + "," + (y + height) + "Z"]
+            ].join(",");
+};
+
 ShapeManager.prototype.findShapeAtCoords = function findShapeAtCoords(jsonShape) {
 
     var thisShapes = this.getShapes();
@@ -240,9 +254,9 @@ ShapeManager.prototype.findShapeAtCoords = function findShapeAtCoords(jsonShape)
 };
 
 // Add new shapes from json but, IF it matches existing shape - offset a bit
-ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes) {
-    var self = this;
-
+ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes, constrainRegion) {
+    var self = this,
+        allPasted = true;
     // For each shape we want to paste...
     jsonShapes.forEach(function(s){
         // check if a shape is at the same coordinates...
@@ -250,12 +264,25 @@ ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes) {
         // if so, keep offsetting until we find a spot...
         while(match) {
             s = $.extend({}, s);
-            s = match.offsetCoords(s, 30, 20);
+            s = match.offsetCoords(s, 20, 10);
             match = self.findShapeAtCoords(s);
         }
-        // the paste!
-        self.addShapeJson(s);
+        // Create shape and test if it's in the specified region
+        var newShape = self.createShapeJson(s);
+
+        if (constrainRegion) {
+            if (typeof constrainRegion === "boolean") {
+                constrainRegion = {x:0, y:0, width:self._orig_width, height:self._orig_height};
+            }
+            if (!newShape.intersectRegion(constrainRegion)) {
+                newShape.destroy();
+                allPasted = false;
+                return;
+            }
+        }
+        self._shapes.push(newShape);
     });
+    return allPasted;
 };
 
 ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes) {
@@ -265,9 +292,15 @@ ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes) {
     });
 };
 
-// Add a json shape object
+// Create and add a json shape object
 ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
-    
+    var newShape = this.createShapeJson(jsonShape);
+    this._shapes.push(newShape);
+    return newShape;
+};
+
+// Create a Shape object from json
+ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
     var s = jsonShape,
         newShape,
         strokeColor = s.strokeColor || this.getStrokeColor(),
@@ -311,8 +344,7 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
         options.y2 = s.y2;
         newShape = new Arrow(options);
     }
-
-    this._shapes.push(newShape);
+    return newShape;
 };
 
 // Add a shape object

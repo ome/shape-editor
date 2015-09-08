@@ -36,6 +36,12 @@ var Ellipse = function Ellipse(options) {
     this._ry = options.ry;
     this._rotation = options.rotation || 0;
 
+    if (this._rx === 0 || this._ry === 0) {
+        this._yxRatio = 0.5;
+    } else {
+        this._yxRatio = this._ry / this._rx;
+    }
+
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
@@ -239,16 +245,18 @@ Ellipse.prototype.updateHandle = function updateHandle(handleId, x, y) {
     var h = this._handleIds[handleId];
     h.x = x;
     h.y = y;
-    this.updateShapeFromHandles();
+    var resizeWidth = (handleId === "left" || handleId === "right");
+    this.updateShapeFromHandles(resizeWidth);
 };
 
-Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
+Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resizeWidth) {
     var hh = this._handleIds,
         lengthX = hh.end.x - hh.start.x,
         lengthY = hh.end.y - hh.start.y,
         widthX = hh.left.x - hh.right.x,
         widthY = hh.left.y - hh.right.y,
         rot;
+    // Use the 'start' and 'end' handles to get rotation and length
     if (lengthX === 0){
         this._rotation = 90;
     } else if (lengthX > 0) {
@@ -259,10 +267,18 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles() {
         this._rotation = 180 + Raphael.deg(rot);
     }
     
+    // centre is half-way between 'start' and 'end' handles
     this._cx = (hh.start.x + hh.end.x)/2;
     this._cy = (hh.start.y + hh.end.y)/2;
+    // Radius-x is half of distance between handles
     this._rx = Math.sqrt((lengthX * lengthX) + (lengthY * lengthY)) / 2;
-    this._ry = Math.sqrt((widthX * widthX) + (widthY * widthY)) / 2;
+    // Radius-y may depend on handles OR on x/y ratio
+    if (resizeWidth) {
+        this._ry = Math.sqrt((widthX * widthX) + (widthY * widthY)) / 2;
+        this._yxRatio = this._ry / this._rx;
+    } else {
+        this._ry = this._yxRatio * this._rx;
+    }
 
     this.drawShape();
 };
@@ -421,7 +437,7 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'cx': startX,
         'cy': startY,
         'rx': 0,
-        'ry': 50,
+        'ry': 0,
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,

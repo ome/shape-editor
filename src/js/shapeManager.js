@@ -60,6 +60,10 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
                           'cursor': 'crosshair'});
+    this.selectRegion = this.paper.rect(0, 0, width, height);
+    this.selectRegion.hide().attr({'stroke': '#ddd',
+                                   'stroke-width': 1,
+                                   'stroke-dasharray': '- '});
     if (this.canEdit) {
         this.newShapeBg.drag(
             function(){
@@ -89,17 +93,30 @@ ShapeManager.prototype.startDrag = function startDrag(x, y, event){
     // clear any existing selected shapes
     this.clearSelected();
 
-    // create a new shape with X and Y
-    // createShape helper can get other details itself
     var offset = this.$el.offset(),
         startX = x - offset.left,
         startY = y - offset.top;
 
-    // correct for zoom before passing coordinates to shape
-    var zoomFraction = this._zoom / 100;
-    startX = startX / zoomFraction;
-    startY = startY / zoomFraction;
-    this.createShape.startDrag(startX, startY);
+    if (this.getState() === "SELECT") {
+
+        this._dragStart = {x: startX, y: startY};
+
+        this.selectRegion.attr({'x': startX,
+                                'y': startY,
+                                'width': 0,
+                                'height': 0});
+        this.selectRegion.toFront().show();
+
+    } else {
+        // create a new shape with X and Y
+        // createShape helper can get other details itself
+
+        // correct for zoom before passing coordinates to shape
+        var zoomFraction = this._zoom / 100;
+        startX = startX / zoomFraction;
+        startY = startY / zoomFraction;
+        this.createShape.startDrag(startX, startY);
+    }
 
     // Move this in front of new shape so that drag events don't get lost to the new shape
     this.newShapeBg.toFront();
@@ -110,15 +127,43 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
         dragX = x - offset.left,
         dragY = y - offset.top;
 
-    // correct for zoom before passing coordinates to shape
-    var zoomFraction = this._zoom / 100;
-    dragX = dragX / zoomFraction;
-    dragY = dragY / zoomFraction;
-    this.createShape.drag(dragX, dragY);
+    if (this.getState() === "SELECT") {
+
+        dx = this._dragStart.x - dragX,
+        dy = this._dragStart.y - dragY;
+
+        this.selectRegion.attr({'x': Math.min(dragX, this._dragStart.x),
+                                'y': Math.min(dragY, this._dragStart.y),
+                                'width': Math.abs(dx),
+                                'height': Math.abs(dy)});
+    } else {
+
+        // correct for zoom before passing coordinates to shape
+        var zoomFraction = this._zoom / 100;
+        dragX = dragX / zoomFraction;
+        dragY = dragY / zoomFraction;
+        this.createShape.drag(dragX, dragY);
+    }
 };
 
 ShapeManager.prototype.stopDrag = function stopDrag(){
-    this.createShape.stopDrag();
+    if (this.getState() === "SELECT") {
+
+        // need to get MODEL coords (correct for zoom)
+        var region = this.selectRegion.attr(),
+            f = this._zoom/100,
+            x = region.x / f,
+            y = region.y / f,
+            width = region.width / f,
+            height = region.height / f;
+        this.selectShapesByRegion({x: x, y: y, width: width, height: height});
+
+        // Hide region and move drag listening element to back again.
+        this.selectRegion.hide();
+        this.newShapeBg.toBack();
+    } else {
+        this.createShape.stopDrag();
+    }
 };
 
 ShapeManager.prototype.setState = function setState(state) {
@@ -129,15 +174,16 @@ ShapeManager.prototype.setState = function setState(state) {
     // When creating shapes, cover existing shapes with newShapeBg
     var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE"];
     if (shapes.indexOf(state) > -1) {
-        this.newShapeBg.show().toFront();
+        this.newShapeBg.toFront();
         // clear selected shapes
         this.clearSelected();
 
         if (this.shapeFactories[state]) {
             this.createShape = this.shapeFactories[state];
         }
-    } else {
-        this.newShapeBg.hide();
+    } else if (state === "SELECT") {
+        // Used to handle drag-select events
+        this.newShapeBg.toBack();
     }
 
     this._state = state;
@@ -417,17 +463,46 @@ ShapeManager.prototype.clearSelected = function clearSelected(silent) {
     }
 };
 
-// select shape: 'shape' can be shape object or ID
-ShapeManager.prototype.selectShape = function selectShape(shape) {
-    if (typeof shape === "number") {
-        shape = this.getShape(shape);
-    }
+
+ShapeManager.prototype.selectShapesByRegion = function selectShapesByRegion(region) {
+
     // Clear selected with silent:true, since we notify again below
     this.clearSelected(true);
-    if (shape) {
-        shape.setSelected(true);
-        this._strokeColor = shape.getStrokeColor();
-        this._strokeWidth = shape.getStrokeWidth();
+
+    var toSelect = [];
+    this.getShapes().forEach(function(shape){
+        if (shape.intersectRegion(region)) {
+            toSelect.push(shape);
+        }
+    });
+    this.selectShapes(toSelect);
+};
+
+// select shape: 'shape' can be shape object or ID
+ShapeManager.prototype.selectShapes = function selectShapes(shapes) {
+
+    var selCount = 0,
+        selectedShape;
+
+    // Clear selected with silent:true, since we notify again below
+    this.clearSelected(true);
+
+    shapes.forEach(function(shape){
+        if (typeof shape === "number") {
+            shape = this.getShape(shape);
+        }
+        if (shape) {
+            selCount++;
+            selectedShape = shape;
+            shape.setSelected(true);
+        }
+    });
+    if (selCount === 1) {
+        this._strokeColor = selectedShape.getStrokeColor();
+        this._strokeWidth = selectedShape.getStrokeWidth();
+    } else {
+        this._strokeColor = undefined;
+        this._strokeWidth = undefined;
     }
     this.$el.trigger("change:selected");
 };

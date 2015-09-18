@@ -97,6 +97,7 @@ Rect.prototype.toJson = function toJson() {
     return rv;
 };
 
+// Does this intersect a 'region' as defined by MODEL coords (not zoom dependent)
 Rect.prototype.intersectRegion = function intersectRegion(region) {
     var path = this.manager.regionToPath(region, this._zoomFraction * 100);
     var f = this._zoomFraction,
@@ -163,7 +164,7 @@ Rect.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
 
 // handle start of drag by selecting this shape
 Rect.prototype._handleMousedown = function _handleMousedown() {
-    this.manager.selectShape(this);
+    this.manager.selectShapes([this]);
 };
 
 Rect.prototype.setSelected = function setSelected(selected) {

@@ -128,7 +128,7 @@ Line.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
 
 // handle start of drag by selecting this shape
 Line.prototype._handleMousedown = function _handleMousedown() {
-    this.manager.selectShape(this);
+    this.manager.selectShapes([this]);
 };
 
 Line.prototype.setCoords = function setCoords(coords) {

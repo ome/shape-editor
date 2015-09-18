@@ -100,8 +100,12 @@ $(function() {
 
     $("#shapesCanvas").bind("change:selected", function(){
         var strokeColor = shapeManager.getStrokeColor();
-        $("input[value='" + strokeColor + "']").prop('checked', 'checked');
-        var strokeWidth = shapeManager.getStrokeWidth();
+        if (strokeColor) {
+          $("input[value='" + strokeColor + "']").prop('checked', 'checked');
+        } else {
+           $("input[name='strokeColor']").removeProp('checked');
+        }
+        var strokeWidth = shapeManager.getStrokeWidth() || 1;
         $("select[name='strokeWidth']").val(strokeWidth);
     });
 

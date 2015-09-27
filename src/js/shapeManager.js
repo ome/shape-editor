@@ -478,6 +478,11 @@ ShapeManager.prototype.selectShapesByRegion = function selectShapesByRegion(regi
     this.selectShapes(toSelect);
 };
 
+
+ShapeManager.prototype.selectAll = function selectAll(region) {
+    this.selectShapes(this.getShapes());
+};
+
 // select shapes: 'shape' can be shape object or ID
 ShapeManager.prototype.selectShapes = function selectShapes(shapes) {
 

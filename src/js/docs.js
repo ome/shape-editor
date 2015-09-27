@@ -62,6 +62,10 @@ $(function() {
         shapeManager.deleteAll();
     });
 
+    $("button[name='selectAll']").click(function(){
+        shapeManager.selectAll();
+    });
+
     $("button[name='copyShapes']").click(function(){
         shapesClipboard = shapeManager.getSelectedShapesJson();
     });

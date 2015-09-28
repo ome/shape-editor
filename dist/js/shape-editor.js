@@ -1905,7 +1905,6 @@ ShapeManager.prototype.notifySelectedShapesChanged = function notifySelectedShap
 };
 
 ShapeManager.prototype.notifyShapesChanged = function notifyShapesChanged(shapes) {
-    console.log("notifyShapesChanged", shapes);
     this.$el.trigger("change:shape", [shapes]);
 };
 

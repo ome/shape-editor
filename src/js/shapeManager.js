@@ -433,6 +433,14 @@ ShapeManager.prototype.getSelectedShapesJson = function getShapesJson() {
     return data;
 };
 
+// Shift all selected shapes by x and y
+// E.g. while dragging multiple shapes
+ShapeManager.prototype.moveSelectedShapes = function moveSelectedShapes(dx, dy, silent) {
+    this.getSelected().forEach(function(shape){
+        shape.offsetShape(dx, dy);
+    });
+};
+
 ShapeManager.prototype.deleteAll = function deleteAll() {
     this.getShapes().forEach(function(s) {
         s.destroy();
@@ -463,7 +471,6 @@ ShapeManager.prototype.clearSelected = function clearSelected(silent) {
     }
 };
 
-
 ShapeManager.prototype.selectShapesByRegion = function selectShapesByRegion(region) {
 
     // Clear selected with silent:true, since we notify again below
@@ -477,7 +484,6 @@ ShapeManager.prototype.selectShapesByRegion = function selectShapesByRegion(regi
     });
     this.selectShapes(toSelect);
 };
-
 
 ShapeManager.prototype.selectAll = function selectAll(region) {
     this.selectShapes(this.getShapes());
@@ -532,8 +538,13 @@ ShapeManager.prototype.selectShapes = function selectShapes(shapes) {
     this.$el.trigger("change:selected");
 };
 
-ShapeManager.prototype.notifyShapeChanged = function notifyShapeChanged(shape) {
-    this.$el.trigger("change:shape", [shape]);
+ShapeManager.prototype.notifySelectedShapesChanged = function notifySelectedShapesChanged() {
+    this.notifyShapesChanged(this.getSelected());
+};
+
+ShapeManager.prototype.notifyShapesChanged = function notifyShapesChanged(shapes) {
+    console.log("notifyShapesChanged", shapes);
+    this.$el.trigger("change:shape", [shapes]);
 };
 
 ShapeManager.prototype.getRandomId = function getRandomId() {

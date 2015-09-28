@@ -52,29 +52,28 @@ var Line = function Line(options) {
                 // DRAG, update location and redraw
                 dx = dx / self._zoomFraction;
                 dy = dy / self._zoomFraction;
-                self._x1 = this.old.x1 + dx;
-                self._y1 = this.old.y1 + dy;
-                self._x2 = this.old.x2 + dx;
-                self._y2 = this.old.y2 + dy;
-                self.drawShape();
+
+                var offsetX = dx - this.prevX;
+                var offsetY = dy - this.prevY;
+                this.prevX = dx;
+                this.prevY = dy;
+
+                // Manager handles move and redraw
+                self.manager.moveSelectedShapes(offsetX, offsetY, true);
                 return false;
             },
             function() {
                 // START drag: note the location of all points
                 self._handleMousedown();
-                this.old = {
-                    'x1': self._x1,
-                    'x2': self._x2,
-                    'y1': self._y1,
-                    'y2': self._y2
-                };
+                this.prevX = 0;
+                this.prevY = 0;
                 return false;
             },
             function() {
                 // STOP
                 // notify manager if line has moved
-                if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1) {
-                    self.manager.notifyShapeChanged(self);
+                if (this.prevX !== 0 || this.prevY !== 0) {
+                    self.manager.notifySelectedShapesChanged();
                 }
                 return false;
             }
@@ -126,9 +125,21 @@ Line.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
     return json;
 };
 
+// Shift this shape by dx and dy
+Line.prototype.offsetShape = function offsetShape(dx, dy) {
+    this._x1 = this._x1 + dx;
+    this._y1 = this._y1 + dy;
+    this._x2 = this._x2 + dx;
+    this._y2 = this._y2 + dy;
+    this.drawShape();
+};
+
 // handle start of drag by selecting this shape
+// if not already selected
 Line.prototype._handleMousedown = function _handleMousedown() {
-    this.manager.selectShapes([this]);
+    if (!this._selected) {
+        this.manager.selectShapes([this]);
+    }
 };
 
 Line.prototype.setCoords = function setCoords(coords) {
@@ -289,7 +300,7 @@ Line.prototype.createHandles = function createHandles() {
             // notify manager if line has moved
             if (self._x1 !== this.old.x1 || self._y1 !== this.old.y1 ||
                     self._x2 !== this.old.x2 || self._y2 !== this.old.y2) {
-                self.manager.notifyShapeChanged(self);
+                self.manager.notifyShapesChanged([self]);
             }
             return false;
         };

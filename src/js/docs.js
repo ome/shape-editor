@@ -113,8 +113,8 @@ $(function() {
         $("select[name='strokeWidth']").val(strokeWidth);
     });
 
-    $("#shapesCanvas").bind("change:shape", function(event, shape){
-        console.log("changed", shape.toJson());
+    $("#shapesCanvas").bind("change:shape", function(event, shapes){
+        console.log("changed", shapes);
     });
 
     $("#shapesCanvas").bind("new:shape", function(event, shape){

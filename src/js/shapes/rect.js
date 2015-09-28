@@ -53,23 +53,26 @@ var Rect = function Rect(options) {
                 // DRAG, update location and redraw
                 dx = dx / self._zoomFraction;
                 dy = dy / self._zoomFraction;
-                self._x = dx+this.ox;
-                self._y = this.oy+dy;
-                self.drawShape();
-                return false;
+
+                var offsetX = dx - this.prevX;
+                var offsetY = dy - this.prevY;
+                this.prevX = dx;
+                this.prevY = dy;
+
+                // Manager handles move and redraw
+                self.manager.moveSelectedShapes(offsetX, offsetY, true);
             },
             function() {
                 self._handleMousedown();
-                // START drag: note the location of this handle
-                this.ox = self._x;
-                this.oy = self._y;
+                this.prevX = 0;
+                this.prevY = 0;
                 return false;
             },
             function() {
                 // STOP
                 // notify manager if rectangle has moved
-                if (self._x !== this.ox || self._y !== this.oy) {
-                    self.manager.notifyShapeChanged(self);
+                if (this.prevX !== 0 || this.prevY !== 0) {
+                    self.manager.notifySelectedShapesChanged();
                 }
                 return false;
             }
@@ -162,9 +165,19 @@ Rect.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
     return json;
 };
 
+// Shift this shape by dx and dy
+Rect.prototype.offsetShape = function offsetShape(dx, dy) {
+    this._x = this._x + dx;
+    this._y = this._y + dy;
+    this.drawShape();
+};
+
 // handle start of drag by selecting this shape
+// if not already selected
 Rect.prototype._handleMousedown = function _handleMousedown() {
-    this.manager.selectShapes([this]);
+    if (!this._selected) {
+        this.manager.selectShapes([this]);
+    }
 };
 
 Rect.prototype.setSelected = function setSelected(selected) {
@@ -360,7 +373,7 @@ Rect.prototype.createHandles = function createHandles() {
     var _handle_drag_end = function() {
         return function() {
             if (this.owidth !== self._width || this.oheight !== self._height) {
-                self.manager.notifyShapeChanged(self);
+                self.manager.notifyShapesChanged([self]);
             }
             return false;
         };

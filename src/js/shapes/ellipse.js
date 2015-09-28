@@ -61,23 +61,28 @@ var Ellipse = function Ellipse(options) {
                 // DRAG, update location and redraw
                 dx = dx / self._zoomFraction;
                 dy = dy / self._zoomFraction;
-                self._cx = dx+this.ox;
-                self._cy = this.oy+dy;
-                self.drawShape();
+
+                var offsetX = dx - this.prevX;
+                var offsetY = dy - this.prevY;
+                this.prevX = dx;
+                this.prevY = dy;
+
+                // Manager handles move and redraw
+                self.manager.moveSelectedShapes(offsetX, offsetY, true);
                 return false;
             },
             function() {
                 // START drag: note the start location
                 self._handleMousedown();
-                this.ox = self._cx;
-                this.oy = self._cy;
+                this.prevX = 0;
+                this.prevY = 0;
                 return false;
             },
             function() {
                 // STOP
                 // notify changed if moved
-                if (this.ox !== self._cx || this.oy !== self._cy) {
-                    self.manager.notifyShapeChanged(self);
+                if (this.prevX !== 0 || this.prevY !== 0) {
+                    self.manager.notifySelectedShapesChanged();
                 }
                 return false;
             }
@@ -128,9 +133,19 @@ Ellipse.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
     return json;
 };
 
+// Shift this shape by dx and dy
+Ellipse.prototype.offsetShape = function offsetShape(dx, dy) {
+    this._cx = this._cx + dx;
+    this._cy = this._cy + dy;
+    this.drawShape();
+};
+
 // handle start of drag by selecting this shape
+// if not already selected
 Ellipse.prototype._handleMousedown = function _handleMousedown() {
-    this.manager.selectShapes([this]);
+    if (!this._selected) {
+        this.manager.selectShapes([this]);
+    }
 };
 
 Ellipse.prototype.setColor = function setColor(strokeColor) {
@@ -366,7 +381,7 @@ Ellipse.prototype.createHandles = function createHandles() {
     var _handle_drag_end = function() {
         return function() {
             // simply notify manager that shape has changed
-            self.manager.notifyShapeChanged(self);
+            self.manager.notifyShapesChanged([self]);
             return false;
         };
     };

@@ -527,13 +527,9 @@ ShapeManager.prototype.selectShapes = function selectShapes(shapes) {
     });
     if (strokeColor) {
         this._strokeColor = strokeColor;
-    } else {
-        this._strokeColor = undefined;
     }
     if (strokeWidth) {
         this._strokeWidth = strokeWidth;
-    } else {
-        this._strokeWidth = undefined;
     }
     this.$el.trigger("change:selected");
 };

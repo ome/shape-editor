@@ -52,7 +52,9 @@ var Ellipse = function Ellipse(options) {
     this.handle_wh = 6;
 
     this.element = this.paper.ellipse();
-    this.element.attr({'fill-opacity': 0.01, 'fill': '#fff'});
+    this.element.attr({'fill-opacity': 0.01,
+                        'fill': '#fff',
+                        'cursor': 'pointer'});
 
     // Drag handling of ellipse
     if (this.manager.canEdit) {

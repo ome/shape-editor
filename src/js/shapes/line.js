@@ -44,6 +44,7 @@ var Line = function Line(options) {
     }
 
     this.element = this.paper.path();
+    this.element.attr({'cursor': 'pointer'});
 
     // Drag handling of line
     if (this.manager.canEdit) {

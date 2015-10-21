@@ -59,7 +59,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg = this.paper.rect(0, 0, width, height);
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
-                          'cursor': 'crosshair'});
+                          'cursor': 'default'});
     this.selectRegion = this.paper.rect(0, 0, width, height);
     this.selectRegion.hide().attr({'stroke': '#ddd',
                                    'stroke-width': 1,
@@ -175,6 +175,7 @@ ShapeManager.prototype.setState = function setState(state) {
     var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE"];
     if (shapes.indexOf(state) > -1) {
         this.newShapeBg.toFront();
+        this.newShapeBg.attr({'cursor': 'crosshair'});
         // clear selected shapes
         this.clearSelected();
 
@@ -184,6 +185,7 @@ ShapeManager.prototype.setState = function setState(state) {
     } else if (state === "SELECT") {
         // Used to handle drag-select events
         this.newShapeBg.toBack();
+        this.newShapeBg.attr({'cursor': 'default'});
     }
 
     this._state = state;

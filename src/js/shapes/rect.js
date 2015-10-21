@@ -44,7 +44,9 @@ var Rect = function Rect(options) {
     this.handle_wh = 6;
 
     this.element = this.paper.rect();
-    this.element.attr({'fill-opacity': 0.01, 'fill': '#fff'});
+    this.element.attr({'fill-opacity': 0.01,
+                       'fill': '#fff',
+                       'cursor': 'pointer'});
 
     if (this.manager.canEdit) {
         // Drag handling of element

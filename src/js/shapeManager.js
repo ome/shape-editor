@@ -304,6 +304,7 @@ ShapeManager.prototype.findShapeAtCoords = function findShapeAtCoords(jsonShape)
 // Add new shapes from json but, IF it matches existing shape - offset a bit
 ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes, constrainRegion) {
     var self = this,
+        newShapes = [],
         allPasted = true;
     // For each shape we want to paste...
     jsonShapes.forEach(function(s){
@@ -328,8 +329,11 @@ ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes, co
                 return;
             }
         }
+        newShapes.push(newShape);
         self._shapes.push(newShape);
     });
+    // Select the newly added shapes
+    this.selectShapes(newShapes);
     return allPasted;
 };
 

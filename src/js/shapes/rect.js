@@ -435,10 +435,29 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'strokeColor': strokeColor});
 };
 
-CreateRect.prototype.drag = function drag(dragX, dragY) {
+CreateRect.prototype.drag = function drag(dragX, dragY, shiftKey) {
 
     var dx = this.startX - dragX,
         dy = this.startY - dragY;
+
+    // if shiftKey, constrain to a square
+    if (shiftKey) {
+        if (dx * dy > 0) {
+            if (Math.abs(dx/dy) > 1) {
+                dy = dx;
+            } else {
+                dx = dy;
+            }
+        } else {
+            if (Math.abs(dx/dy) > 1) {
+                dy = -dx;
+            } else {
+                dx = -dy;
+            }
+        }
+        dragX = (dx - this.startX) * -1;
+        dragY = (dy - this.startY) * -1;
+    }
 
     this.rect.setCoords({'x': Math.min(dragX, this.startX),
                         'y': Math.min(dragY, this.startY),

@@ -255,7 +255,7 @@ Ellipse.prototype.setZoom = function setZoom(zoom) {
     this.drawShape();
 };
 
-Ellipse.prototype.updateHandle = function updateHandle(handleId, x, y) {
+Ellipse.prototype.updateHandle = function updateHandle(handleId, x, y, shiftKey) {
     // Refresh the handle coordinates, then update the specified handle
     // using MODEL coordinates
     this._handleIds = this.getHandleCoords();
@@ -263,10 +263,10 @@ Ellipse.prototype.updateHandle = function updateHandle(handleId, x, y) {
     h.x = x;
     h.y = y;
     var resizeWidth = (handleId === "left" || handleId === "right");
-    this.updateShapeFromHandles(resizeWidth);
+    this.updateShapeFromHandles(resizeWidth, shiftKey);
 };
 
-Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resizeWidth) {
+Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resizeWidth, shiftKey) {
     var hh = this._handleIds,
         lengthX = hh.end.x - hh.start.x,
         lengthY = hh.end.y - hh.start.y,
@@ -294,6 +294,9 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
         this._ry = Math.sqrt((widthX * widthX) + (widthY * widthY)) / 2;
         this._yxRatio = this._ry / this._rx;
     } else {
+        if (shiftKey) {
+            this._yxRatio = 1;
+        }
         this._ry = this._yxRatio * this._rx;
     }
 
@@ -367,7 +370,7 @@ Ellipse.prototype.createHandles = function createHandles() {
             // on DRAG...
             var absX = dx + this.ox,
                 absY = dy + this.oy;
-            self.updateHandle(this.h_id, absX, absY);
+            self.updateHandle(this.h_id, absX, absY, event.shiftKey);
             return false;
         };
     };
@@ -461,9 +464,9 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'strokeColor': strokeColor});
 };
 
-CreateEllipse.prototype.drag = function drag(dragX, dragY) {
+CreateEllipse.prototype.drag = function drag(dragX, dragY, shiftKey) {
 
-    this.ellipse.updateHandle('end', dragX, dragY);
+    this.ellipse.updateHandle('end', dragX, dragY, shiftKey);
 };
 
 CreateEllipse.prototype.stopDrag = function stopDrag() {

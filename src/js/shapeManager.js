@@ -139,10 +139,11 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
     } else {
 
         // correct for zoom before passing coordinates to shape
-        var zoomFraction = this._zoom / 100;
+        var zoomFraction = this._zoom / 100,
+            shiftKey = event.shiftKey;
         dragX = dragX / zoomFraction;
         dragY = dragY / zoomFraction;
-        this.createShape.drag(dragX, dragY);
+        this.createShape.drag(dragX, dragY, shiftKey);
     }
 };
 

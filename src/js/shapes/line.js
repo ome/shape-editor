@@ -268,6 +268,7 @@ Line.prototype.createHandles = function createHandles() {
     var _handle_drag = function() {
         return function (dx, dy, mouseX, mouseY, event) {
 
+            var x, y;
             dx = dx / self._zoomFraction;
             dy = dy / self._zoomFraction;
 
@@ -275,10 +276,30 @@ Line.prototype.createHandles = function createHandles() {
             if (this.h_id === "start" || this.h_id === "middle") {
                 self._x1 = this.old.x1 + dx;
                 self._y1 = this.old.y1 + dy;
+                // if shift, make line horizontal or vertical
+                if (event.shiftKey && this.h_id === "start") {
+                    x = self._x1 - self._x2;
+                    y = self._y1 - self._y2;
+                    if (Math.abs(x/y) > 1) {
+                        self._y1 = this.old.y2;
+                    } else if (Math.abs(x/y) < 1){
+                        self._x1 = this.old.x2;
+                    }
+                }
             }
             if (this.h_id === "end" || this.h_id === "middle") {
                 self._x2 = this.old.x2 + dx;
                 self._y2 = this.old.y2 + dy;
+                // if shift, make line horizontal or vertical
+                if (event.shiftKey && this.h_id === "end") {
+                    x = self._x1 - self._x2;
+                    y = self._y1 - self._y2;
+                    if (Math.abs(x/y) > 1) {
+                        self._y2 = this.old.y1;
+                    } else if (Math.abs(x/y) < 1){
+                        self._x2 = this.old.x1;
+                    }
+                }
             }
             self.drawShape();
             return false;
@@ -435,6 +456,9 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         strokeWidth = this.manager.getStrokeWidth(),
         zoom = this.manager.getZoom();
 
+    this.startX = startX;
+    this.startY = startY;
+
     this.line = new Line({
         'manager': this.manager,
         'paper': this.paper,
@@ -447,7 +471,21 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'strokeColor': strokeColor});
 };
 
-CreateLine.prototype.drag = function drag(dragX, dragY) {
+CreateLine.prototype.drag = function drag(dragX, dragY, shiftKey) {
+
+    // if shiftKey, constrain to horizontal / vertical
+    if (shiftKey) {
+        var dx = this.startX - dragX,
+            dy = this.startY - dragY;
+
+        if (Math.abs(dx/dy) > 1) {
+            dy = 0;
+        } else {
+            dx = 0;
+        }
+        dragX = (dx - this.startX) * -1;
+        dragY = (dy - this.startY) * -1;
+    }
 
     this.line.setCoords({'x2': dragX, 'y2': dragY});
 };

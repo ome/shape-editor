@@ -514,6 +514,9 @@ var CreateArrow = function CreateArrow(options) {
             strokeWidth = this.manager.getStrokeWidth(),
             zoom = this.manager.getZoom();
 
+        this.startX = startX;
+        this.startY = startY;
+
         this.line = new Arrow({
             'manager': this.manager,
             'paper': this.paper,

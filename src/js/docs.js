@@ -135,6 +135,12 @@ $(function() {
                                "rx": 125, "ry": 50,
                                "rotation": 45});
 
+    shapeManager.addShapeJson({"type": "Ellipse",
+                               "strokeColor": "#ffffff",
+                               "cx": 204, "cy": 260,
+                               "rx": 95, "ry": 55,
+                               "transform": "matrix(0.82 0.56 -0.56 0.82 183.0 -69.7)"});
+
     shapeManager.addShapeJson({"type": "Arrow",
                                "strokeColor": "#ffff00",
                                "strokeWidth": 4,

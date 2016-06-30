@@ -374,6 +374,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.rx = s.rx;
         options.ry = s.ry;
         options.rotation = s.rotation || 0;
+        options.transform = s.transform;
         newShape = new Ellipse(options);
     }
     else if (s.type === 'Rectangle') {

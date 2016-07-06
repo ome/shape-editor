@@ -1923,6 +1923,19 @@ ShapeManager.prototype.deleteAll = function deleteAll() {
     this.$el.trigger("change:selected");
 };
 
+ShapeManager.prototype.deleteById = function deleteById(shapeId) {
+    var notSelected = [];
+    this.getShapes().forEach(function(s) {
+        if (s._id === shapeId) {
+            s.destroy();
+        } else {
+            notSelected.push(s);
+        }
+    });
+    this._shapes = notSelected;
+    this.$el.trigger("change:selected");
+};
+
 ShapeManager.prototype.deleteSelected = function getSelected() {
     var notSelected = [];
     this.getShapes().forEach(function(s) {
@@ -1934,6 +1947,19 @@ ShapeManager.prototype.deleteSelected = function getSelected() {
     });
     this._shapes = notSelected;
     this.$el.trigger("change:selected");
+};
+
+ShapeManager.prototype.selectShapesById = function selectShapesById(shapeId) {
+
+    // Clear selected with silent:true, since we notify again below
+    this.clearSelected(true);
+    var toSelect = [];
+    this.getShapes().forEach(function(shape){
+        if (shape.toJson().id === shapeId) {
+            toSelect.push(shape);
+        }
+    });
+    this.selectShapes(toSelect);
 };
 
 ShapeManager.prototype.clearSelected = function clearSelected(silent) {

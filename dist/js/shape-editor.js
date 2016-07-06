@@ -1776,36 +1776,44 @@ ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes, co
             match = self.findShapeAtCoords(s);
         }
         // Create shape and test if it's in the specified region
-        var newShape = self.createShapeJson(s);
-
-        if (constrainRegion) {
-            if (typeof constrainRegion === "boolean") {
-                constrainRegion = {x:0, y:0, width:self._orig_width, height:self._orig_height};
-            }
-            if (!newShape.intersectRegion(constrainRegion)) {
-                newShape.destroy();
-                allPasted = false;
-                return;
-            }
+        var added = self.addShapeJson(s, constrainRegion);
+        if (added) {
+            newShapes.push(added);
+        } else {
+            allPasted = false;
         }
-        newShapes.push(newShape);
-        self._shapes.push(newShape);
     });
     // Select the newly added shapes
     this.selectShapes(newShapes);
     return allPasted;
 };
 
-ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes) {
-    var self = this;
+ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes, constrainRegion) {
+    var allAdded = true;
     jsonShapes.forEach(function(s){
-        self.addShapeJson(s);
-    });
+        var added = this.addShapeJson(s, constrainRegion);
+        if (!added) {
+            allAdded = false;
+        }
+    }.bind(this));
+    return allAdded;
 };
 
 // Create and add a json shape object
-ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape) {
+// Use constrainRegion {x, y, width, height} to enforce if it's in the specified region
+// constrainRegion = true will use the whole image plane
+// Return false if shape didn't get created
+ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape, constrainRegion) {
     var newShape = this.createShapeJson(jsonShape);
+    if (constrainRegion) {
+        if (typeof constrainRegion === "boolean") {
+            constrainRegion = {x: 0, y: 0, width: this._orig_width, height: this._orig_height};
+        }
+        if (!newShape.intersectRegion(constrainRegion)) {
+            newShape.destroy();
+            return false;
+        }
+    }
     this._shapes.push(newShape);
     return newShape;
 };

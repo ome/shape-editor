@@ -84,7 +84,12 @@ $(function() {
     });
 
     $("button[name='selectShape']").click(function(){
-      shapeManager.selectShape(1234);
+      shapeManager.selectShapesById(1234);
+    });
+
+    var lastShapeId;
+    $("button[name='deleteShapeById']").click(function(){
+      shapeManager.deleteById(lastShapeId);
     });
 
     $("button[name='setShapes']").click(function(){
@@ -153,11 +158,12 @@ $(function() {
                                "x1": 25, "y1": 250,
                                "x2": 200, "y2": 200});
 
-    shapeManager.addShapeJson({"type": "Arrow",
+    var s = shapeManager.addShapeJson({"type": "Line",
                                "strokeColor": "#00ff00",
                                "strokeWidth": 2,
                                "x1": 400, "y1": 400,
                                "x2": 250, "y2": 310});
+    lastShapeId = s.toJson().id;
 
     // We start off in the 'SELECT' mode
     shapeManager.setState("SELECT");

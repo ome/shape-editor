@@ -139,7 +139,7 @@ Ellipse.prototype.compareCoords = function compareCoords(json) {
         return false;
     }
     ['cx', 'cy', 'rx', 'ry', 'rotation'].forEach(function(c){
-        if (json[c] !== selfJson[c]) {
+        if (Math.round(json[c]) !== Math.round(selfJson[c])) {
             match = false;
         }
     });

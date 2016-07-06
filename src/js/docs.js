@@ -55,15 +55,15 @@ $(function() {
     });
 
     $("button[name='deleteSelected']").click(function(){
-        shapeManager.deleteSelected();
+        shapeManager.deleteSelectedShapes();
     });
 
     $("button[name='deleteAll']").click(function(){
-        shapeManager.deleteAll();
+        shapeManager.deleteAllShapes();
     });
 
     $("button[name='selectAll']").click(function(){
-        shapeManager.selectAll();
+        shapeManager.selectAllShapes();
     });
 
     $("button[name='copyShapes']").click(function(){
@@ -88,8 +88,8 @@ $(function() {
     });
 
     var lastShapeId;
-    $("button[name='deleteShapeById']").click(function(){
-      shapeManager.deleteById(lastShapeId);
+    $("button[name='deleteShapesByIds']").click(function(){
+      shapeManager.deleteShapesByIds([lastShapeId]);
     });
 
     $("button[name='setShapes']").click(function(){

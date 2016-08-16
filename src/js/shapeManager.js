@@ -449,6 +449,11 @@ ShapeManager.prototype.getSelectedShapesJson = function getShapesJson() {
     return data;
 };
 
+ShapeManager.prototype.getShapeBoundingBox = function getShapeBoundingBox(shapeId) {
+    var shape = this.getShape(shapeId);
+    return shape.element.getBBox();
+};
+
 // Shift all selected shapes by x and y
 // E.g. while dragging multiple shapes
 ShapeManager.prototype.moveSelectedShapes = function moveSelectedShapes(dx, dy, silent) {

@@ -83,6 +83,17 @@ $(function() {
       console.log(json);
     });
 
+    $("button[name='getBBoxes']").click(function(){
+      var shapes = shapeManager.getShapesJson();
+      shapes.forEach(function(shape){
+        var bbox = shapeManager.getShapeBoundingBox(shape.id);
+        // Add each bbox as a Rectangle to image
+        bbox.type = "Rectangle";
+        bbox.strokeColor = "#ffffff";
+        shapeManager.addShapeJson(bbox);
+      });
+    });
+
     $("button[name='selectShape']").click(function(){
       shapeManager.selectShapesById(1234);
     });
@@ -167,14 +178,14 @@ $(function() {
                               "cy": 297.5,
                               "cx": 258});
 
-        shapeManager.addShapeJson({"type": "Ellipse",
-                              "strokeColor": "#ff0000",
-                              "ry": 71.5,
-                              "rx": 41,
-                              "transform": "matrix(0.839800601976 0.542894970432 -0.542894970432 0.839800601976 111.894472287 -140.195845758)",
-                              "strokeWidth": 2,
-                              "cy": 260.5,
-                              "cx": 419});
+    shapeManager.addShapeJson({"type": "Ellipse",
+                          "strokeColor": "#ffff00",
+                          "ry": 71.5,
+                          "rx": 41,
+                          "transform": "matrix(0.839800601976 0.542894970432 -0.542894970432 0.839800601976 111.894472287 -140.195845758)",
+                          "strokeWidth": 2,
+                          "cy": 260.5,
+                          "cx": 419});
 
     var s = shapeManager.addShapeJson({"type": "Line",
                                "strokeColor": "#00ff00",

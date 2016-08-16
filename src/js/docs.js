@@ -158,6 +158,24 @@ $(function() {
                                "x1": 25, "y1": 250,
                                "x2": 200, "y2": 200});
 
+    shapeManager.addShapeJson({"type": "Ellipse",
+                              "strokeColor": "#00ff00",
+                              "ry": 31.5,
+                              "rx": 91,
+                              "transform": "matrix(2.39437435854 -0.644012141633 2.14261951162 0.765696311828 -1006.17788921 153.860479773)",
+                              "strokeWidth": 2,
+                              "cy": 297.5,
+                              "cx": 258});
+
+        shapeManager.addShapeJson({"type": "Ellipse",
+                              "strokeColor": "#ff0000",
+                              "ry": 71.5,
+                              "rx": 41,
+                              "transform": "matrix(0.839800601976 0.542894970432 -0.542894970432 0.839800601976 111.894472287 -140.195845758)",
+                              "strokeWidth": 2,
+                              "cy": 260.5,
+                              "cx": 419});
+
     var s = shapeManager.addShapeJson({"type": "Line",
                                "strokeColor": "#00ff00",
                                "strokeWidth": 2,

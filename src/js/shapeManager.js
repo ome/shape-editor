@@ -347,6 +347,9 @@ ShapeManager.prototype.addShapesJson = function addShapesJson(jsonShapes, constr
 // Return false if shape didn't get created
 ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape, constrainRegion) {
     var newShape = this.createShapeJson(jsonShape);
+    if (!newShape) {
+        return;
+    }
     if (constrainRegion) {
         if (typeof constrainRegion === "boolean") {
             constrainRegion = {x: 0, y: 0, width: this._orig_width, height: this._orig_height};
@@ -451,7 +454,14 @@ ShapeManager.prototype.getSelectedShapesJson = function getShapesJson() {
 
 ShapeManager.prototype.getShapeBoundingBox = function getShapeBoundingBox(shapeId) {
     var shape = this.getShape(shapeId);
-    return shape.element.getBBox();
+    var bbox = shape.element.getBBox();
+    var zoomFraction = this.getZoom() / 100;
+    return {
+        x: bbox.x / zoomFraction,
+        y: bbox.y / zoomFraction,
+        width: bbox.width / zoomFraction,
+        height: bbox.height / zoomFraction
+    };
 };
 
 // Shift all selected shapes by x and y

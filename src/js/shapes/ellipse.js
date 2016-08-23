@@ -109,8 +109,9 @@ var Ellipse = function Ellipse(options) {
     // create handles, applying this.Matrix if set
     this.createHandles();
     // update cx, cy, rx, ry & rotation
-    // (resizeWidth = true) - recalculate width/height ratio based on all handles
-    this.updateShapeFromHandles(true);
+    // If we have Matrix, recalculate width/height ratio based on all handles
+    var resizeWidth = !!this.Matrix;
+    this.updateShapeFromHandles(resizeWidth);
     // and draw the Ellipse
     this.drawShape();
 };

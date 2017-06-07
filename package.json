@@ -16,7 +16,7 @@
     "editor"
   ],
   "author": "The Open Microscopy Team",
-  "license": "GPL",
+  "license": "BSD",
   "bugs": {
     "url": "https://github.com/ome/shape-editor/issues"
   },

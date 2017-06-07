@@ -1,5 +1,5 @@
 {
-  "name": "shape-editor-js",
+  "name": "shape-editor",
   "version": "0.0.0",
   "description": "Uses Raphael.js to create a shape editing library",
   "main": "index.html",
@@ -8,19 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/will-moore/shape-editor-js.git"
+    "url": "https://github.com/ome/shape-editor.git"
   },
   "keywords": [
     "Raphael.js",
     "shape",
     "editor"
   ],
-  "author": "Will Moore @will_j_moore",
+  "author": "The Open Microscopy Team",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/will-moore/shape-editor-js/issues"
+    "url": "https://github.com/ome/shape-editor/issues"
   },
-  "homepage": "https://github.com/will-moore/shape-editor-js",
+  "homepage": "https://github.com/ome/shape-editor",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",

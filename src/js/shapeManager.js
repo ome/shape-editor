@@ -380,10 +380,10 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
     }
 
     if (s.type === 'Ellipse') {
-        options.cx = s.cx;
-        options.cy = s.cy;
-        options.rx = s.rx;
-        options.ry = s.ry;
+        options.x = s.x;
+        options.y = s.y;
+        options.radiusX = s.radiusX;
+        options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
         newShape = new Ellipse(options);

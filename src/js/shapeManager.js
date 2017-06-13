@@ -59,10 +59,11 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg = this.paper.rect(0, 0, width, height);
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
+                          'stroke-width': 0,
                           'cursor': 'default'});
     this.selectRegion = this.paper.rect(0, 0, width, height);
     this.selectRegion.hide().attr({'stroke': '#ddd',
-                                   'stroke-width': 1,
+                                   'stroke-width': 0,
                                    'stroke-dasharray': '- '});
     if (this.canEdit) {
         this.newShapeBg.drag(

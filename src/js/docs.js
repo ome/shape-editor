@@ -136,8 +136,8 @@ $(function() {
             "x": 100, "y": 250,
             "width": 325, "height": 250},
           {"type": "Ellipse",
-            "cx": 300, "cy": 250,
-            "rx": 125, "ry": 250,
+            "x": 300, "y": 250,
+            "radiusX": 125, "radiusY": 250,
             "rotation": 100}
           ];
         shapeManager.setShapesJson(shapesJson);
@@ -172,14 +172,14 @@ $(function() {
                                "width": 125, "height": 150});
 
     shapeManager.addShapeJson({"type": "Ellipse",
-                               "cx": 200, "cy": 150,
-                               "rx": 125, "ry": 50,
+                               "x": 200, "y": 150,
+                               "radiusX": 125, "radiusY": 50,
                                "rotation": 45});
 
     shapeManager.addShapeJson({"type": "Ellipse",
                                "strokeColor": "#ffffff",
-                               "cx": 204, "cy": 260,
-                               "rx": 95, "ry": 55,
+                               "x": 204, "y": 260,
+                               "radiusX": 95, "radiusY": 55,
                                "transform": "matrix(0.82 0.56 -0.56 0.82 183.0 -69.7)"});
 
     shapeManager.addShapeJson({"type": "Arrow",
@@ -196,21 +196,21 @@ $(function() {
 
     shapeManager.addShapeJson({"type": "Ellipse",
                               "strokeColor": "#00ff00",
-                              "ry": 31.5,
-                              "rx": 91,
+                              "radiusY": 31.5,
+                              "radiusX": 91,
                               "transform": "matrix(2.39437435854 -0.644012141633 2.14261951162 0.765696311828 -1006.17788921 153.860479773)",
                               "strokeWidth": 2,
-                              "cy": 297.5,
-                              "cx": 258});
+                              "y": 297.5,
+                              "x": 258});
 
     shapeManager.addShapeJson({"type": "Ellipse",
                           "strokeColor": "#ffff00",
-                          "ry": 71.5,
-                          "rx": 41,
+                          "radiusY": 71.5,
+                          "radiusX": 41,
                           "transform": "matrix(0.839800601976 0.542894970432 -0.542894970432 0.839800601976 111.894472287 -140.195845758)",
                           "strokeWidth": 2,
-                          "cy": 260.5,
-                          "cx": 419});
+                          "y": 260.5,
+                          "x": 419});
 
     var s = shapeManager.addShapeJson({"type": "Line",
                                "strokeColor": "#00ff00",

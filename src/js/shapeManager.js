@@ -66,10 +66,11 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     this.newShapeBg = this.paper.rect(0, 0, width, height);
     this.newShapeBg.attr({'fill':'#000',
                           'fill-opacity':0.01,
+                          'stroke-width': 0,
                           'cursor': 'default'});
     this.selectRegion = this.paper.rect(0, 0, width, height);
     this.selectRegion.hide().attr({'stroke': '#ddd',
-                                   'stroke-width': 1,
+                                   'stroke-width': 0,
                                    'stroke-dasharray': '- '});
     if (this.canEdit) {
         this.newShapeBg.drag(
@@ -316,6 +317,10 @@ ShapeManager.prototype.pasteShapesJson = function pasteShapesJson(jsonShapes, co
         allPasted = true;
     // For each shape we want to paste...
     jsonShapes.forEach(function(s){
+        // Create a shape to resolve any transform matrix -> coords
+        var temp = self.createShapeJson(s);
+        s = temp.toJson();
+        temp.destroy();
         // check if a shape is at the same coordinates...
         var match = self.findShapeAtCoords(s);
         // if so, keep offsetting until we find a spot...
@@ -387,10 +392,10 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
     }
 
     if (s.type === 'Ellipse') {
-        options.cx = s.cx;
-        options.cy = s.cy;
-        options.rx = s.rx;
-        options.ry = s.ry;
+        options.x = s.x;
+        options.y = s.y;
+        options.radiusX = s.radiusX;
+        options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
         newShape = new Ellipse(options);

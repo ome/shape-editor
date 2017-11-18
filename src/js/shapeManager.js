@@ -33,6 +33,7 @@
 /* globals Arrow: false */
 /* globals CreateEllipse: false */
 /* globals Ellipse: false */
+/* globals Polygon: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -420,6 +421,10 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.x2 = s.x2;
         options.y2 = s.y2;
         newShape = new Arrow(options);
+    }
+    else if (s.type === 'Polygon') {
+        options.points = s.points;
+        newShape = new Polygon(options);
     }
     return newShape;
 };

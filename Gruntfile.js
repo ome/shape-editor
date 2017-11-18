@@ -6,6 +6,7 @@ module.exports = function(grunt) {
         "src/js/shapes/line.js",
         "src/js/shapes/rect.js",
         "src/js/shapes/ellipse.js",
+        "src/js/shapes/polygon.js",
         "src/js/shapeManager.js"
     ];
 

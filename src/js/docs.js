@@ -164,6 +164,11 @@ $(function() {
     });
 
     // Add some shapes to display
+    shapeManager.addShapeJson({"type": "Polygon",
+                               "points": "329,271 295,314 295,365 333,432 413,400 452,350 432,292 385,256",
+                               "strokeColor": "#ffffff",
+                               "strokeWidth": 3});
+
     shapeManager.addShapeJson({"id": 1234,
                                "type": "Rectangle",
                                "strokeColor": "#ff00ff",

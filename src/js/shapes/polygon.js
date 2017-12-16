@@ -47,8 +47,41 @@ var Polygon = function Polygon(options) {
                         'fill': '#fff',
                         'cursor': 'pointer'});
 
-    // create handles, applying this.Matrix if set
-    // this.createHandles();
+    if (this.manager.canEdit) {
+        // Drag handling of element
+        this.element.drag(
+            function(dx, dy) {
+                // DRAG, update location and redraw
+                dx = dx / self._zoomFraction;
+                dy = dy / self._zoomFraction;
+
+                var offsetX = dx - this.prevX;
+                var offsetY = dy - this.prevY;
+                this.prevX = dx;
+                this.prevY = dy;
+
+                // Manager handles move and redraw
+                self.manager.moveSelectedShapes(offsetX, offsetY, true);
+            },
+            function() {
+                self._handleMousedown();
+                this.prevX = 0;
+                this.prevY = 0;
+                return false;
+            },
+            function() {
+                // STOP
+                // notify manager if rectangle has moved
+                if (this.prevX !== 0 || this.prevY !== 0) {
+                    self.manager.notifySelectedShapesChanged();
+                }
+                return false;
+            }
+        );
+    }
+
+    // create handles...
+    this.createHandles();
     // and draw the Polygon
     this.drawShape();
 };
@@ -86,8 +119,6 @@ Polygon.prototype.offsetCoords = function offsetCoords(json, dx, dy) {
 
 // Shift this shape by dx and dy
 Polygon.prototype.offsetShape = function offsetShape(dx, dy) {
-    console.log('dx', dx, 'dy', dy);
-    console.log('points', this._points);
     // Offset all coords in points string "229,171 195,214 195,265 233,33"
     var points = this._points.split(" ").map(function(xy){
         var coords = xy.split(",").map(function(c){return parseFloat(c, 10)})
@@ -95,7 +126,6 @@ Polygon.prototype.offsetShape = function offsetShape(dx, dy) {
         coords[1] = coords[1] + dy;
         return coords.join(",");
     }).join(" ");
-    console.log('points', points);
     this._points = points;
     this.drawShape();
 };
@@ -236,23 +266,22 @@ Polygon.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
     // this.element.transform('r'+ this._rotation);
 
-    // if (this.isSelected()) {
-    //     this.element.toFront();
-    //     this.handles.show().toFront();
-    // } else {
-    //     this.handles.hide();
-    // }
+    if (this.isSelected()) {
+        this.element.toFront();
+        this.handles.show().toFront();
+    } else {
+        this.handles.hide();
+    }
 
-    // // handles have been updated (model coords)
-    // this._handleIds = this.getHandleCoords();
-    // var hnd, h_id, hx, hy;
-    // for (var h=0, l=this.handles.length; h<l; h++) {
-    //     hnd = this.handles[h];
-    //     h_id = hnd.h_id;
-    //     hx = this._handleIds[h_id].x * this._zoomFraction;
-    //     hy = this._handleIds[h_id].y * this._zoomFraction;
-    //     hnd.attr({'x':hx-this.handle_wh/2, 'y':hy-this.handle_wh/2});
-    // }
+    // handles have been updated (model coords)
+    var hnd, hx, hy;
+    this._points.split(" ").forEach(function(xy, i){
+        var xy = xy.split(",");
+        hx = parseInt(xy[0]) * this._zoomFraction;
+        hy = parseInt(xy[1]) * this._zoomFraction;
+        hnd = this.handles[i];
+        hnd.attr({'x':hx-this.handle_wh/2, 'y':hy-this.handle_wh/2});
+    }.bind(this));
 };
 
 Polygon.prototype.setSelected = function setSelected(selected) {
@@ -264,19 +293,19 @@ Polygon.prototype.setSelected = function setSelected(selected) {
 Polygon.prototype.createHandles = function createHandles() {
     // ---- Create Handles -----
 
-    // NB: handleIds are used to calculate ellipse coords
+    // NB: handleIds are used to calculate coords
     // so handledIds are scaled to MODEL coords, not zoomed.
     // this._handleIds = this.getHandleCoords();
 
-    // var self = this,
-    //     // map of centre-points for each handle
-    //     handleAttrs = {'stroke': '#4b80f9',
-    //                     'fill': '#fff',
-    //                     'cursor': 'move',
-    //                     'fill-opacity': 1.0};
+    var self = this,
+        // map of centre-points for each handle
+        handleAttrs = {'stroke': '#4b80f9',
+                        'fill': '#fff',
+                        'cursor': 'move',
+                        'fill-opacity': 1.0};
 
-    // // draw handles
-    // self.handles = this.paper.set();
+    // draw handles
+    self.handles = this.paper.set();
     // var _handle_drag = function() {
     //     return function (dx, dy, mouseX, mouseY, event) {
     //         dx = dx / self._zoomFraction;
@@ -305,11 +334,12 @@ Polygon.prototype.createHandles = function createHandles() {
     //     };
     // };
 
-    // var hsize = this.handle_wh,
-    //     hx, hy, handle;
-    // for (var key in this._handleIds) {
-    //     hx = this._handleIds[key].x;
-    //     hy = this._handleIds[key].y;
+    var hsize = this.handle_wh,
+        hx, hy, handle;
+    this._points.split(" ").forEach(function(xy){
+        var xy = xy.split(",");
+        hx = parseInt(xy[0]);
+        hy = parseInt(xy[1]);
     //     // If we have a transformation matrix, apply it...
     //     if (this.Matrix) {
     //         var matrixStr = this.Matrix.toTransformString();
@@ -331,10 +361,10 @@ Polygon.prototype.createHandles = function createHandles() {
     //         this._handleIds[key].x = hx;
     //         this._handleIds[key].y = hy;
     //     }
-    //     handle = this.paper.rect(hx-hsize/2, hy-hsize/2, hsize, hsize);
-    //     handle.attr({'cursor': 'move'});
-    //     handle.h_id = key;
-    //     handle.line = self;
+        handle = self.paper.rect(hx-hsize/2, hy-hsize/2, hsize, hsize);
+        handle.attr({'cursor': 'move'});
+        // handle.h_id = key;
+        // handle.line = self;
 
     //     if (this.manager.canEdit) {
     //         handle.drag(
@@ -343,13 +373,13 @@ Polygon.prototype.createHandles = function createHandles() {
     //             _handle_drag_end()
     //         );
     //     }
-    //     self.handles.push(handle);
-    // }
+        self.handles.push(handle);
+    });
 
-    // self.handles.attr(handleAttrs).hide();     // show on selection
+    self.handles.attr(handleAttrs).hide();     // show on selection
 };
 
-Polygon.prototype.getHandleCoords = function getHandleCoords() {
+// Polygon.prototype.getHandleCoords = function getHandleCoords() {
     // Returns MODEL coordinates (not zoom coordinates)
     // var rot = Raphael.rad(this._rotation),
     //     x = this._x,
@@ -370,50 +400,81 @@ Polygon.prototype.getHandleCoords = function getHandleCoords() {
     //         'left':{x: leftX, y: leftY},
     //         'right':{x: rightX, y: rightY}
     //     };
-};
+// };
 
 
 // Class for creating Lines.
-var CreatePolgon = function CreatePolgon(options) {
+var CreatePolygon = function CreatePolygon(options) {
 
     this.paper = options.paper;
     this.manager = options.manager;
+
+    // Keep track of points during Polygon creation
+    this.pointsList = [];
 };
 
-CreatePolgon.prototype.startDrag = function startDrag(startX, startY) {
+CreatePolygon.prototype.startDrag = function startDrag(startX, startY) {
 
-    var strokeColor = this.manager.getStrokeColor(),
-        strokeWidth = this.manager.getStrokeWidth(),
-        zoom = this.manager.getZoom();
+    // var strokeColor = this.manager.getStrokeColor(),
+    //     strokeWidth = this.manager.getStrokeWidth(),
+    //     zoom = this.manager.getZoom();
 
-    this.polygon = new Polygon({
-        'manager': this.manager,
-        'paper': this.paper,
-        'x': startX,
-        'y': startY,
-        'radiusX': 0,
-        'radiusY': 0,
-        'rotation': 0,
-        'strokeWidth': strokeWidth,
-        'zoom': zoom,
-        'strokeColor': strokeColor});
-};
+    // this.polygon = new Polygon({
+    //     'manager': this.manager,
+    //     'paper': this.paper,
+    //     'x': startX,
+    //     'y': startY,
+    //     'radiusX': 0,
+    //     'radiusY': 0,
+    //     'rotation': 0,
+    //     'strokeWidth': strokeWidth,
+    //     'zoom': zoom,
+    //     'strokeColor': strokeColor});
 
-CreatePolgon.prototype.drag = function drag(dragX, dragY, shiftKey) {
-
-    this.ellipse.updateHandle('end', dragX, dragY, shiftKey);
-};
-
-CreatePolgon.prototype.stopDrag = function stopDrag() {
-
-    // Don't create ellipse of zero size (click, without drag)
-    var coords = this.ellipse.toJson();
-    if (coords.radiusX < 2) {
-        this.ellipse.destroy();
-        delete this.ellipse;
-        return;
+    if (startX === this.startX && startY === this.startY) {
+        // Second click in same point as last click...
+        // complete shape
+        this.polygon === undefined;
     }
-    // on the 'new:shape' trigger, this shape will already be selected
-    this.ellipse.setSelected(true);
-    this.manager.addShape(this.ellipse);
+    this.startX = startX;
+    this.startY = startY;
+};
+
+CreatePolygon.prototype.drag = function drag(dragX, dragY, shiftKey) {
+
+    // Update the last point and redraw
+    this.pointsList[this.pointsList.length-1] = dragX + "," + dragY;
+    this.polygon._points = this.pointsList.join(" ");
+    this.polygon.drawShape();
+    // this.ellipse.updateHandle('end', dragX, dragY, shiftKey);
+
+};
+
+CreatePolygon.prototype.stopDrag = function stopDrag() {
+
+    if (!this.polygon) {
+        var strokeColor = this.manager.getStrokeColor(),
+            strokeWidth = this.manager.getStrokeWidth(),
+            zoom = this.manager.getZoom();
+        // Reset list with first item at current point
+        this.pointsList = [this.startX + "," + this.startY,
+                           this.startX + "," + this.startY];
+
+        console.log("pointS", this.pointsList.join(" "));
+        this.polygon = new Polygon({
+            'manager': this.manager,
+            'paper': this.paper,
+            'points': 'M' + this.pointsList.join(" "),
+            'strokeWidth': strokeWidth,
+            'zoom': zoom,
+            'strokeColor': strokeColor});
+
+        // on the 'new:shape' trigger, this shape will already be selected
+        // this.polygon.setSelected(true);
+        this.manager.addShape(this.polygon);
+    } else {
+        this.pointsList.push(this.startX + "," + this.startY);
+    }
+
+    console.log('stopDrag', arguments);
 };

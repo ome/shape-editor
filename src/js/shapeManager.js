@@ -34,6 +34,7 @@
 /* globals CreateEllipse: false */
 /* globals Ellipse: false */
 /* globals Polygon: false */
+/* globals CreatePolygon: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -42,7 +43,7 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
     options = options || {};
 
     // Keep track of state, strokeColor etc
-    this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE"];
+    this.STATES = ["SELECT", "RECT", "LINE", "ARROW", "ELLIPSE", "POLYGON"];
     this._state = "SELECT";
     this._strokeColor = "#ff0000";
     this._strokeWidth = 2;
@@ -84,12 +85,18 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
             function(){
                 self.stopDrag.apply(self, arguments);
             });
+        // this.newShapeBg.click(
+        //     function(){
+        //         console.log("CLICK!", arguments);
+        //         self.click.apply(self, arguments);
+        //     });
 
         this.shapeFactories = {
             "RECT": new CreateRect({'manager': this, 'paper': this.paper}),
             "ELLIPSE": new CreateEllipse({'manager': this, 'paper': this.paper}),
             "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
-            "ARROW": new CreateArrow({'manager': this, 'paper': this.paper})
+            "ARROW": new CreateArrow({'manager': this, 'paper': this.paper}),
+            "POLYGON": new CreatePolygon({'manager': this, 'paper': this.paper})
         };
 
         this.createShape = this.shapeFactories.LINE;
@@ -156,17 +163,17 @@ ShapeManager.prototype.drag = function drag(dx, dy, x, y, event){
     }
 };
 
-ShapeManager.prototype.stopDrag = function stopDrag(){
+ShapeManager.prototype.stopDrag = function stopDrag(x, y, event){
     if (this.getState() === "SELECT") {
 
         // need to get MODEL coords (correct for zoom)
         var region = this.selectRegion.attr(),
             f = this._zoom/100,
-            x = region.x / f,
-            y = region.y / f,
+            sx = region.x / f,
+            sy = region.y / f,
             width = region.width / f,
             height = region.height / f;
-        this.selectShapesByRegion({x: x, y: y, width: width, height: height});
+        this.selectShapesByRegion({x: sx, y: sy, width: width, height: height});
 
         // Hide region and move drag listening element to back again.
         this.selectRegion.hide();
@@ -182,7 +189,7 @@ ShapeManager.prototype.setState = function setState(state) {
         return;
     }
     // When creating shapes, cover existing shapes with newShapeBg
-    var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE"];
+    var shapes = ["RECT", "LINE", "ARROW", "ELLIPSE", "POLYGON"];
     if (shapes.indexOf(state) > -1) {
         this.newShapeBg.toFront();
         this.newShapeBg.attr({'cursor': 'crosshair'});

@@ -1672,15 +1672,10 @@ Polygon.prototype.setZoom = function setZoom(zoom) {
     this.drawShape();
 };
 
-Polygon.prototype.updateHandle = function updateHandle(handleId, x, y, shiftKey) {
-    // Refresh the handle coordinates, then update the specified handle
-    // using MODEL coordinates
-    // this._handleIds = this.getHandleCoords();
-    // var h = this._handleIds[handleId];
-    // h.x = x;
-    // h.y = y;
-    // var resizeWidth = (handleId === "left" || handleId === "right");
-    // this.updateShapeFromHandles(resizeWidth, shiftKey);
+Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftKey) {
+    var coords = this._points.split(" ");
+    coords[handleIndex] = x + "," + y;
+    this._points = coords.join(" ");
 };
 
 Polygon.prototype.updateShapeFromHandles = function updateShapeFromHandles(resizeWidth, shiftKey) {
@@ -1731,7 +1726,6 @@ Polygon.prototype.drawShape = function drawShape() {
     //     radiusX = this._radiusX * f,
     //     radiusY = this._radiusY * f;
     var path = this.getPath();
-    console.log('Polygon path', path);
 
     this.element.attr({'path': path,
                        'stroke': strokeColor,
@@ -1778,37 +1772,38 @@ Polygon.prototype.createHandles = function createHandles() {
 
     // draw handles
     self.handles = this.paper.set();
-    // var _handle_drag = function() {
-    //     return function (dx, dy, mouseX, mouseY, event) {
-    //         dx = dx / self._zoomFraction;
-    //         dy = dy / self._zoomFraction;
-    //         // on DRAG...
-    //         var absX = dx + this.ox,
-    //             absY = dy + this.oy;
-    //         self.updateHandle(this.h_id, absX, absY, event.shiftKey);
-    //         return false;
-    //     };
-    // };
-    // var _handle_drag_start = function() {
-    //     return function () {
-    //         // START drag: simply note the location we started
-    //         // we scale by zoom to get the 'model' coordinates
-    //         this.ox = (this.attr("x") + this.attr('width')/2) / self._zoomFraction;
-    //         this.oy = (this.attr("y") + this.attr('height')/2) / self._zoomFraction;
-    //         return false;
-    //     };
-    // };
-    // var _handle_drag_end = function() {
-    //     return function() {
-    //         // simply notify manager that shape has changed
-    //         self.manager.notifyShapesChanged([self]);
-    //         return false;
-    //     };
-    // };
+    var _handle_drag = function() {
+        return function (dx, dy, mouseX, mouseY, event) {
+            dx = dx / self._zoomFraction;
+            dy = dy / self._zoomFraction;
+            // on DRAG...
+            var absX = dx + this.ox,
+                absY = dy + this.oy;
+            self.updateHandle(this.h_id, absX, absY, event.shiftKey);
+            self.drawShape();
+            return false;
+        };
+    };
+    var _handle_drag_start = function() {
+        return function () {
+            // START drag: simply note the location we started
+            // we scale by zoom to get the 'model' coordinates
+            this.ox = (this.attr("x") + this.attr('width')/2) / self._zoomFraction;
+            this.oy = (this.attr("y") + this.attr('height')/2) / self._zoomFraction;
+            return false;
+        };
+    };
+    var _handle_drag_end = function() {
+        return function() {
+            // simply notify manager that shape has changed
+            self.manager.notifyShapesChanged([self]);
+            return false;
+        };
+    };
 
     var hsize = this.handle_wh,
         hx, hy, handle;
-    this._points.split(" ").forEach(function(xy){
+    this._points.split(" ").forEach(function(xy, i){
         var xy = xy.split(",");
         hx = parseInt(xy[0]);
         hy = parseInt(xy[1]);
@@ -1835,16 +1830,16 @@ Polygon.prototype.createHandles = function createHandles() {
     //     }
         handle = self.paper.rect(hx-hsize/2, hy-hsize/2, hsize, hsize);
         handle.attr({'cursor': 'move'});
-        // handle.h_id = key;
+        handle.h_id = i;
         // handle.line = self;
 
-    //     if (this.manager.canEdit) {
-    //         handle.drag(
-    //             _handle_drag(),
-    //             _handle_drag_start(),
-    //             _handle_drag_end()
-    //         );
-    //     }
+        if (self.manager.canEdit) {
+            handle.drag(
+                _handle_drag(),
+                _handle_drag_start(),
+                _handle_drag_end()
+            );
+        }
         self.handles.push(handle);
     });
 

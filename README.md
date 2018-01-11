@@ -13,7 +13,7 @@ Install Node from https://nodejs.org, then:
 
 ::
 
-    $ cd omero-figure
+    $ cd shape-editor
     $ npm install
 
 Install Grunt CLI as described on http://gruntjs.com/using-the-cli.

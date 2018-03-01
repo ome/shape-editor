@@ -332,26 +332,25 @@ Polygon.prototype.createHandles = function createHandles() {
 };
 
 
-// Class for creating Lines.
-var CreatePolygon = function CreatePolygon(options) {
+var Polyline = function Polyline(options) {
+    var that = new Polygon(options);
 
-    this.paper = options.paper;
-    this.manager = options.manager;
+    var toJ = that.toJson;
+    that.toJson = function toJson() {
+        var shapeJson = toJ.call(that);
+        shapeJson.type = "Polyline";
+        return shapeJson;
+    };
 
-    // Keep track of points during Polygon creation
-    this.pointsList = [];
-};
+    var getPolygonPath = that.getPath;
+    that.getPath = function getPath() {
+        var polygonPath = getPolygonPath.call(that);
+        return polygonPath.replace("Z", "");
+    }
 
-// TODO - Implement Polygon creation!
-
-CreatePolygon.prototype.startDrag = function startDrag(startX, startY) {
-
-};
-
-CreatePolygon.prototype.drag = function drag(dragX, dragY, shiftKey) {
-
-};
-
-CreatePolygon.prototype.stopDrag = function stopDrag() {
-
-};
+    // since we've over-ridden getPath() after it is called
+    // during  new Polygon(options)
+    // we need to call it again!
+    that.drawShape();
+    return that;
+}

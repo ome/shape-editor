@@ -1804,29 +1804,28 @@ Polygon.prototype.createHandles = function createHandles() {
 };
 
 
-// Class for creating Lines.
-var CreatePolygon = function CreatePolygon(options) {
+var Polyline = function Polyline(options) {
+    var that = new Polygon(options);
 
-    this.paper = options.paper;
-    this.manager = options.manager;
+    var toJ = that.toJson;
+    that.toJson = function toJson() {
+        var shapeJson = toJ.call(that);
+        shapeJson.type = "Polyline";
+        return shapeJson;
+    };
 
-    // Keep track of points during Polygon creation
-    this.pointsList = [];
-};
+    var getPolygonPath = that.getPath;
+    that.getPath = function getPath() {
+        var polygonPath = getPolygonPath.call(that);
+        return polygonPath.replace("Z", "");
+    }
 
-// TODO - Implement Polygon creation!
-
-CreatePolygon.prototype.startDrag = function startDrag(startX, startY) {
-
-};
-
-CreatePolygon.prototype.drag = function drag(dragX, dragY, shiftKey) {
-
-};
-
-CreatePolygon.prototype.stopDrag = function stopDrag() {
-
-};
+    // since we've over-ridden getPath() after it is called
+    // during  new Polygon(options)
+    // we need to call it again!
+    that.drawShape();
+    return that;
+}
 
 /* globals Raphael: false */
 /* globals CreateRect: false */
@@ -1838,7 +1837,7 @@ CreatePolygon.prototype.stopDrag = function stopDrag() {
 /* globals CreateEllipse: false */
 /* globals Ellipse: false */
 /* globals Polygon: false */
-/* globals CreatePolygon: false */
+/* globals Polyline: false */
 /* globals console: false */
 
 var ShapeManager = function ShapeManager(elementId, width, height, options) {
@@ -1900,7 +1899,6 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
             "ELLIPSE": new CreateEllipse({'manager': this, 'paper': this.paper}),
             "LINE": new CreateLine({'manager': this, 'paper': this.paper}),
             "ARROW": new CreateArrow({'manager': this, 'paper': this.paper}),
-            "POLYGON": new CreatePolygon({'manager': this, 'paper': this.paper})
         };
 
         this.createShape = this.shapeFactories.LINE;
@@ -2236,6 +2234,9 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
     else if (s.type === 'Polygon') {
         options.points = s.points;
         newShape = new Polygon(options);
+    } else if (s.type === 'Polyline') {
+        options.points = s.points;
+        newShape = new Polyline(options);
     }
     return newShape;
 };

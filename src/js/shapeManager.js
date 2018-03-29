@@ -85,11 +85,6 @@ var ShapeManager = function ShapeManager(elementId, width, height, options) {
             function(){
                 self.stopDrag.apply(self, arguments);
             });
-        // this.newShapeBg.click(
-        //     function(){
-        //         console.log("CLICK!", arguments);
-        //         self.click.apply(self, arguments);
-        //     });
 
         this.shapeFactories = {
             "RECT": new CreateRect({'manager': this, 'paper': this.paper}),

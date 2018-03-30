@@ -1,0 +1,6 @@
+Managed manually
+----------------
+
+Library: Raphael
+Site http://dmitrybaranovskiy.github.io/raphael/
+License: MIT

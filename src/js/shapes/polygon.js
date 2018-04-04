@@ -31,7 +31,6 @@ var Polygon = function Polygon(options) {
         this._id = this.manager.getRandomId();
     }
     this._points = options.points;
-    // this._rotation = options.rotation || 0;
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
@@ -51,6 +50,9 @@ var Polygon = function Polygon(options) {
         // Drag handling of element
         this.element.drag(
             function(dx, dy) {
+                if (self._zoomFraction === 0) {
+                    return;     // just in case
+                }
                 // DRAG, update location and redraw
                 dx = dx / self._zoomFraction;
                 dy = dy / self._zoomFraction;
@@ -90,7 +92,6 @@ Polygon.prototype.toJson = function toJson() {
     var rv = {
         'type': "Polygon",
         'points': this._points,
-        // 'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -236,7 +237,6 @@ Polygon.prototype.drawShape = function drawShape() {
     this.element.attr({'path': path,
                        'stroke': strokeColor,
                        'stroke-width': strokeW});
-    // this.element.transform('r'+ this._rotation);
 
     if (this.isSelected()) {
         this.element.toFront();
@@ -316,7 +316,6 @@ Polygon.prototype.createHandles = function createHandles() {
         handle = self.paper.rect(hx-hsize/2, hy-hsize/2, hsize, hsize);
         handle.attr({'cursor': 'move'});
         handle.h_id = i;
-        // handle.line = self;
 
         if (self.manager.canEdit) {
             handle.drag(

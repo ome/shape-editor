@@ -208,7 +208,7 @@ Line.prototype.drawShape = function drawShape() {
 
     var p = this.getPath(),
         strokeColor = this._strokeColor,
-        strokeW = this._getLineWidth() * this._zoomFraction;
+        strokeW = this._getLineWidth();
 
     this.element.attr({'path': p,
                        'stroke': strokeColor,
@@ -379,12 +379,11 @@ var Arrow = function Arrow(options) {
             y1 = this._y1 * zf,
             x2 = this._x2 * zf,
             y2 = this._y2 * zf,
-            w = this._strokeWidth * zf * 0.5;
+            w = this._strokeWidth * 0.5;
 
         var headSize = (this._strokeWidth * 5) + 9,
             dx = x2 - x1,
             dy = y2 - y1;
-        headSize = headSize * this._zoomFraction;
 
         var lineAngle = Math.atan(dx / dy);
         var f = (dy < 0 ? 1 : -1);
@@ -740,7 +739,7 @@ Rect.prototype.destroy = function destroy() {
 Rect.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        lineW = this._strokeWidth * this._zoomFraction;
+        lineW = this._strokeWidth;
 
     var f = this._zoomFraction,
         x = this._x * f,
@@ -1290,7 +1289,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
 Ellipse.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth * this._zoomFraction;
+        strokeW = this._strokeWidth;
 
     var f = this._zoomFraction,
         x = this._x * f,
@@ -1701,7 +1700,7 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
 Polygon.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth * this._zoomFraction;
+        strokeW = this._strokeWidth;
 
     var f = this._zoomFraction;
     var path = this.getPath();

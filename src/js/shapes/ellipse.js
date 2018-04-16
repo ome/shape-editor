@@ -333,7 +333,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
 Ellipse.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth * this._zoomFraction;
+        strokeW = this._strokeWidth;
 
     var f = this._zoomFraction,
         x = this._x * f,

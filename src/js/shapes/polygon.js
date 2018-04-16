@@ -229,7 +229,7 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
 Polygon.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth * this._zoomFraction;
+        strokeW = this._strokeWidth;
 
     var f = this._zoomFraction;
     var path = this.getPath();

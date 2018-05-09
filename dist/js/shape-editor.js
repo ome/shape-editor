@@ -381,7 +381,7 @@ var Arrow = function Arrow(options) {
             y2 = this._y2 * zf,
             w = this._strokeWidth * 0.5;
 
-        var headSize = (this._strokeWidth * 5) + 9,
+        var headSize = (this._strokeWidth * 4) + 5,
             dx = x2 - x1,
             dy = y2 - y1;
 

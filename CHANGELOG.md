@@ -1,3 +1,10 @@
+4.0.0 (May 2018)
+----------------
+
+This version includes:
+
+ - removed scaling of line-widths when you zoom (PR #11)
+
 3.1.1 (April 2018)
 ------------------
 

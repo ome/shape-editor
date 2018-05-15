@@ -167,7 +167,7 @@ $(function() {
     shapeManager.addShapeJson({"type": "Polygon",
                                "points": "329,271 295,314 295,365 333,432 413,400 452,350 432,292 385,256",
                                "strokeColor": "#ffffff",
-                               "strokeWidth": 3});
+                               "strokeWidth": 0.5});
 
     shapeManager.addShapeJson({"type": "Polyline",
                                "points": "29,71 95,14 95,65 33,132 113,100 152,50",

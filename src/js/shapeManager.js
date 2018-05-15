@@ -259,7 +259,7 @@ ShapeManager.prototype.getStrokeColor = function getStrokeColor() {
 };
 
 ShapeManager.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
-    strokeWidth = parseInt(strokeWidth, 10);
+    strokeWidth = parseFloat(strokeWidth, 10);
     this._strokeWidth = strokeWidth;
     var selected = this.getSelectedShapes();
     for (var s=0; s<selected.length; s++) {

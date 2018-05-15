@@ -244,7 +244,7 @@ Rect.prototype.destroy = function destroy() {
 Rect.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        lineW = this._strokeWidth * this._zoomFraction;
+        lineW = this._strokeWidth;
 
     var f = this._zoomFraction,
         x = this._x * f,

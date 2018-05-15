@@ -1,6 +1,6 @@
 {
   "name": "@openmicroscopy/shape-editor",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "Uses Raphael.js to create a shape editing library",
   "main": "index.html",
   "scripts": {

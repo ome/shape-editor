@@ -41,6 +41,13 @@ var Rect = function Rect(options) {
     this._y = options.y;
     this._width = options.width;
     this._height = options.height;
+
+    if(options.area){
+        this._area = options.area;
+    }else{
+        this._area = this._width * this._height
+    }
+
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
@@ -100,6 +107,7 @@ Rect.prototype.toJson = function toJson() {
         'y': this._y,
         'width': this._width,
         'height': this._height,
+        'area': this._width * this._height,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -242,7 +250,6 @@ Rect.prototype.destroy = function destroy() {
 };
 
 Rect.prototype.drawShape = function drawShape() {
-
     var strokeColor = this._strokeColor,
         lineW = this._strokeWidth;
 
@@ -258,7 +265,6 @@ Rect.prototype.drawShape = function drawShape() {
                        'stroke-width': lineW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -364,6 +370,7 @@ Rect.prototype.createHandles = function createHandles() {
             self._y = newRect.y;
             self._width = newRect.width;
             self._height = newRect.height;
+            self._area = newRect.width * newRect.height
             self.drawShape();
             return false;
         };
@@ -437,6 +444,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'width': 0,
         'height': 0,
+        'area': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
         'strokeColor': strokeColor});
@@ -468,7 +476,9 @@ CreateRect.prototype.drag = function drag(dragX, dragY, shiftKey) {
 
     this.rect.setCoords({'x': Math.min(dragX, this.startX),
                         'y': Math.min(dragY, this.startY),
-                        'width': Math.abs(dx), 'height': Math.abs(dy)});
+                        'width': Math.abs(dx), 
+                        'height': Math.abs(dy)});
+    this.rect._area = Math.abs(dx) * Math.abs(dy)
 };
 
 CreateRect.prototype.stopDrag = function stopDrag() {

@@ -101,10 +101,10 @@ Polygon.prototype.getBBox = function getBBox(points){
         yCoords.push(parseInt(point[1]))
     });
 
-    return {'x1': Math.min(xCoords),
-            'x2': Math.max(xCoords),
-            'y1': Math.min(yCoords),
-            'y2': Math.max(yCoords)}
+    return {'x1': Math.min(...xCoords),
+            'x2': Math.max(...xCoords),
+            'y1': Math.min(...yCoords),
+            'y2': Math.max(...yCoords)}
 }
 
 Polygon.prototype.toJson = function toJson() {

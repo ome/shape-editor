@@ -401,6 +401,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
+        options.area = s.radiusX * s.radiusY * Math.PI;
         newShape = new Ellipse(options);
     }
     else if (s.type === 'Rectangle') {
@@ -416,6 +417,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Line(options);
     }
     else if (s.type === 'Arrow') {
@@ -423,6 +425,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Arrow(options);
     }
     else if (s.type === 'Polygon') {

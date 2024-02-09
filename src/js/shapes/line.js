@@ -43,7 +43,7 @@ var Line = function Line(options) {
     this._y2 = options.y2;
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
-    this._area = Math.abs((this._x2 - this.x1) * (this._y2 - this.y1))*this._strokeWidth;
+    this._area = Math.pow(Math.pow(this._x2 - this._x1, 2) + Math.pow(this._y2 - this._y1, 2), 0.5)*this._strokeWidth;
     this.handle_wh = 6;
     this._selected = false;
     this._zoomFraction = 1;
@@ -101,7 +101,7 @@ Line.prototype.toJson = function toJson() {
         'x2': this._x2,
         'y1': this._y1,
         'y2': this._y2,
-        'area': Math.abs((this._x2 - this._x1) * (this._y2 - this._y1))*this._strokeWidth,
+        'area': Math.pow(Math.pow(this._x2 - this._x1, 2) + Math.pow(this._y2 - this._y1, 2), 0.5)*this._strokeWidth,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -310,7 +310,7 @@ Line.prototype.createHandles = function createHandles() {
                     }
                 }
             }
-            self._area = Math.abs((self._x2 - self._x1) * (self._y2 - self._y1))*self._strokeWidth;
+            self._area = Math.pow(Math.pow(self._x2 - self._x1, 2) + Math.pow(self._y2 - self._y1, 2), 0.5)*self._strokeWidth;
             self.drawShape();
             return false;
         };
@@ -498,7 +498,7 @@ CreateLine.prototype.drag = function drag(dragX, dragY, shiftKey) {
     }
 
     this.line.setCoords({'x2': dragX, 'y2': dragY});
-    self._area = Math.abs((dragX - self._x1) * (dragY - self._y1))*self._strokeWidth;
+    self._area = Math.pow(Math.pow(dragX - self._x1, 2) + Math.pow(dragY - self._y1, 2), 0.5)*self._strokeWidth;
 };
 
 CreateLine.prototype.stopDrag = function stopDrag() {

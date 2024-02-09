@@ -23,6 +23,7 @@ var Line = function Line(options) {
     this._y2 = options.y2;
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
+    this._area = Math.abs((this._x2 - this.x1) * (this._y2 - this.y1))*this._strokeWidth;
     this.handle_wh = 6;
     this._selected = false;
     this._zoomFraction = 1;
@@ -80,6 +81,7 @@ Line.prototype.toJson = function toJson() {
         'x2': this._x2,
         'y1': this._y1,
         'y2': this._y2,
+        'area': Math.abs((this._x2 - this._x1) * (this._y2 - this._y1))*this._strokeWidth,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -156,6 +158,7 @@ Line.prototype.getStrokeColor = function getStrokeColor() {
 
 Line.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
     this._strokeWidth = strokeWidth;
+    this._area = Math.abs((this._x2 - this._x1) * (this._y2 - this._y1))*this._strokeWidth;
     this.drawShape();
 };
 
@@ -216,7 +219,6 @@ Line.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -288,6 +290,7 @@ Line.prototype.createHandles = function createHandles() {
                     }
                 }
             }
+            self._area = Math.abs((self._x2 - self._x1) * (self._y2 - self._y1))*self._strokeWidth;
             self.drawShape();
             return false;
         };
@@ -452,6 +455,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y1': startY,
         'x2': startX,
         'y2': startY,
+        'area': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
         'strokeColor': strokeColor});
@@ -474,6 +478,7 @@ CreateLine.prototype.drag = function drag(dragX, dragY, shiftKey) {
     }
 
     this.line.setCoords({'x2': dragX, 'y2': dragY});
+    self._area = Math.abs((dragX - self._x1) * (dragY - self._y1))*self._strokeWidth;
 };
 
 CreateLine.prototype.stopDrag = function stopDrag() {
@@ -510,6 +515,7 @@ var CreateArrow = function CreateArrow(options) {
             'y1': startY,
             'x2': startX,
             'y2': startY,
+            'area': 0,
             'strokeWidth': strokeWidth,
             'zoom': zoom,
             'strokeColor': strokeColor});
@@ -1520,6 +1526,8 @@ var Polygon = function Polygon(options) {
         this._id = this.manager.getRandomId();
     }
     this._points = options.points;
+    this._bbox = this.getBBox(this._points);
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
@@ -1577,10 +1585,28 @@ var Polygon = function Polygon(options) {
     this.drawShape();
 };
 
+Polygon.prototype.getBBox = function getBBox(points){
+    var coords = points.split(" ");
+    var xCoords = [];
+    var yCoords = [];
+
+    coords.forEach(function(s){
+        var point = s.split(",")
+        xCoords.push(parseInt(point[0]))
+        yCoords.push(parseInt(point[1]))
+    });
+
+    return {'x1': Math.min(xCoords),
+            'x2': Math.max(xCoords),
+            'y1': Math.min(yCoords),
+            'y2': Math.max(yCoords)}
+}
+
 Polygon.prototype.toJson = function toJson() {
     var rv = {
         'type': "Polygon",
         'points': this._points,
+        'area': this._area,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -1713,6 +1739,20 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
     var coords = this._points.split(" ");
     coords[handleIndex] = x + "," + y;
     this._points = coords.join(" ");
+
+    if(x < this._bbox.x1){
+        this._bbox.x1 = x
+    }
+    if(x > this._bbox.x2){
+        this._bbox.x2 = x
+    }
+    if(y < this._bbox.y1){
+        this._bbox.y1 = y
+    }
+    if(y > this._bbox.y2){
+        this._bbox.y2 = y
+    }
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 };
 
 Polygon.prototype.drawShape = function drawShape() {
@@ -1728,7 +1768,6 @@ Polygon.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -2220,6 +2259,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
+        options.area = s.radiusX * s.radiusY * Math.PI;
         newShape = new Ellipse(options);
     }
     else if (s.type === 'Rectangle') {
@@ -2235,6 +2275,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Line(options);
     }
     else if (s.type === 'Arrow') {
@@ -2242,6 +2283,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Arrow(options);
     }
     else if (s.type === 'Polygon') {

@@ -745,7 +745,6 @@ Rect.prototype.destroy = function destroy() {
 };
 
 Rect.prototype.drawShape = function drawShape() {
-    console.log("Draw shape")
     var strokeColor = this._strokeColor,
         lineW = this._strokeWidth;
 
@@ -1038,6 +1037,13 @@ var Ellipse = function Ellipse(options) {
     if (options.zoom) {
         this._zoomFraction = options.zoom / 100;
     }
+
+    if(options.area){
+        this._area = options.area;
+    }else{
+        this._area = this._radiusX * this._radiusY * Math.PI
+    }
+
     this.handle_wh = 6;
 
     this.element = this.paper.ellipse();
@@ -1097,6 +1103,7 @@ Ellipse.prototype.toJson = function toJson() {
         'y': this._y,
         'radiusX': this._radiusX,
         'radiusY': this._radiusY,
+        'area': this._radiusX * this._radiusY * Math.PI,
         'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
@@ -1293,7 +1300,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
         }
         this._radiusY = this._yxRatio * this._radiusX;
     }
-
+    this._area = this._radiusX * this._radiusY * Math.PI
     this.drawShape();
 };
 
@@ -1317,7 +1324,6 @@ Ellipse.prototype.drawShape = function drawShape() {
     this.element.transform('r'+ this._rotation);
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -1473,6 +1479,7 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'radiusX': 0,
         'radiusY': 0,
+        'area': 0,
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
@@ -2452,7 +2459,6 @@ ShapeManager.prototype.notifySelectedShapesChanged = function notifySelectedShap
 
 ShapeManager.prototype.notifyShapesChanged = function notifyShapesChanged(shapes) {
     this.sortShape(this._shapes);
-    console.log(this._shapes)
     this.$el.trigger("change:shape", [shapes]);
 };
 

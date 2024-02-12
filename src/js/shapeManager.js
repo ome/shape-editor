@@ -277,7 +277,6 @@ ShapeManager.prototype.getFillOpacity = function getFillOpacity() {
 };
 
 ShapeManager.prototype.setFillOpacity = function setFillOpacity(fillOpacity) {
-    console.log(fillOpacity)
     var fillOpacity = parseFloat(fillOpacity, 10);
     this._fillOpacity = fillOpacity;
     var selected = this.getSelectedShapes();
@@ -421,7 +420,6 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
                    'strokeColor': strokeColor,
                    'fillColor': fillColor,
                    'fillOpacity': fillOpacity};
-    console.log("sh.manager fillcolor "+fillColor);
     if (jsonShape.id) {
         options.id = jsonShape.id;
     }

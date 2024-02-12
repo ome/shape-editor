@@ -34,6 +34,8 @@ var Polygon = function Polygon(options) {
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
+    this._fillColor = options.fillColor;
+    this._fillOpacity = options.fillOpacity;
     this._selected = false;
     this._zoomFraction = 1;
     if (options.zoom) {
@@ -42,8 +44,8 @@ var Polygon = function Polygon(options) {
     this.handle_wh = 6;
 
     this.element = this.paper.path("");
-    this.element.attr({'fill-opacity': 0.01,
-                        'fill': '#fff',
+    this.element.attr({'fill-opacity': this._fillOpacity,
+                        'fill': this._fillColor,
                         'cursor': 'pointer'});
 
     if (this.manager.canEdit) {
@@ -93,7 +95,9 @@ Polygon.prototype.toJson = function toJson() {
         'type': "Polygon",
         'points': this._points,
         'strokeWidth': this._strokeWidth,
-        'strokeColor': this._strokeColor
+        'strokeColor': this._strokeColor,
+        'fillColor': this._fillColor,
+        'fillOpacity':this._fillOpacity
     };
     if (this._id) {
         rv.id = this._id;
@@ -155,8 +159,22 @@ Polygon.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
     this.drawShape();
 };
 
+Polygon.prototype.setFillColor = function setFillColor(fillColor) {
+    this._fillColor = fillColor;
+    this.drawShape();
+};
+
 Polygon.prototype.getFillColor = function getFillColor() {
     return this._fillColor;
+};
+
+Polygon.prototype.setFillOpacity = function setFillOpacity(fillOpacity) {
+    this._fillOpacity = fillOpacity;
+    this.drawShape();
+};
+
+Polygon.prototype.getFillOpacity = function getFillOpacity() {
+    return this._fillOpacity;
 };
 
 Polygon.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
@@ -233,14 +251,18 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
 Polygon.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth;
+        strokeW = this._strokeWidth,
+        fillColor = this._fillColor,
+        fillOpacity = this._fillOpacity;
 
     var f = this._zoomFraction;
     var path = this.getPath();
 
     this.element.attr({'path': path,
                        'stroke': strokeColor,
-                       'stroke-width': strokeW});
+                       'stroke-width': strokeW,
+                       'fill': fillColor,
+                       'fill-opacity': fillOpacity});
 
     if (this.isSelected()) {
         this.element.toFront();

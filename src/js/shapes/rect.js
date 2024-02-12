@@ -42,17 +42,8 @@ var Rect = function Rect(options) {
     this._width = options.width;
     this._height = options.height;
     this._strokeColor = options.strokeColor;
-    console.log("Option.fuillColor "+options.fillColor);
-    if(options.fillColor){
-        this._fillColor = options.fillColor;
-    }else{
-        this._fillColor = "#ffffff";
-    }
-    if(options.fillOpacity){
-        this._fillOpacity = options.fillOpacity;
-    }else{
-        this._fillOpacity = 0.01;
-    }
+    this._fillColor = options.fillColor;
+    this._fillOpacity = options.fillOpacity;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
     this._zoomFraction = 1;

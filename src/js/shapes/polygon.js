@@ -155,6 +155,10 @@ Polygon.prototype.setStrokeColor = function setStrokeColor(strokeColor) {
     this.drawShape();
 };
 
+Polygon.prototype.getFillColor = function getFillColor() {
+    return this._fillColor;
+};
+
 Polygon.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
     this._strokeWidth = strokeWidth;
     this.drawShape();

@@ -66,6 +66,8 @@ var Ellipse = function Ellipse(options) {
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
+    this._fillColor = options.fillColor;
+    this._fillOpacity = options.fillOpacity;
     this._selected = false;
     this._zoomFraction = 1;
     if (options.zoom) {
@@ -81,8 +83,8 @@ var Ellipse = function Ellipse(options) {
     this.handle_wh = 6;
 
     this.element = this.paper.ellipse();
-    this.element.attr({'fill-opacity': 0.01,
-                        'fill': '#fff',
+    this.element.attr({'fill-opacity':  this._fillOpacity,
+                        'fill': this._fillColor,
                         'cursor': 'pointer'});
 
     // Drag handling of ellipse
@@ -140,7 +142,9 @@ Ellipse.prototype.toJson = function toJson() {
         'area': this._radiusX * this._radiusY * Math.PI,
         'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
-        'strokeColor': this._strokeColor
+        'strokeColor': this._strokeColor,
+        'fillColor': this._fillColor,
+        'fillOpacity':this._fillOpacity
     };
     if (this._id) {
         rv.id = this._id;
@@ -206,6 +210,24 @@ Ellipse.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
 
 Ellipse.prototype.getStrokeWidth = function getStrokeWidth() {
     return this._strokeWidth;
+};
+
+Ellipse.prototype.setFillColor = function setFillColor(fillColor) {
+    this._fillColor = fillColor;
+    this.drawShape();
+};
+
+Ellipse.prototype.getFillColor = function getFillColor() {
+    return this._fillColor;
+};
+
+Ellipse.prototype.setFillOpacity = function setFillOpacity(fillOpacity) {
+    this._fillOpacity = fillOpacity;
+    this.drawShape();
+};
+
+Ellipse.prototype.getFillOpacity = function getFillOpacity() {
+    return this._fillOpacity;
 };
 
 Ellipse.prototype.destroy = function destroy() {
@@ -341,7 +363,10 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
 Ellipse.prototype.drawShape = function drawShape() {
 
     var strokeColor = this._strokeColor,
-        strokeW = this._strokeWidth;
+        strokeW = this._strokeWidth,
+        fillColor = this._fillColor,
+        fillOpacity = this._fillOpacity;
+
 
     var f = this._zoomFraction,
         x = this._x * f,
@@ -354,7 +379,9 @@ Ellipse.prototype.drawShape = function drawShape() {
                        'rx': radiusX,
                        'ry': radiusY,
                        'stroke': strokeColor,
-                       'stroke-width': strokeW});
+                       'stroke-width': strokeW,
+                       'fill': fillColor,
+                       'fill-opacity': fillOpacity});
     this.element.transform('r'+ this._rotation);
 
     if (this.isSelected()) {
@@ -504,6 +531,8 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
 
     var strokeColor = this.manager.getStrokeColor(),
         strokeWidth = this.manager.getStrokeWidth(),
+        fillColor = this.manager.getFillColor(),
+        fillOpacity = this.manager.getFillOpacity(),
         zoom = this.manager.getZoom();
 
     this.ellipse = new Ellipse({
@@ -517,7 +546,9 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
-        'strokeColor': strokeColor});
+        'strokeColor': strokeColor,
+        'fillColor': fillColor,
+        'fillOpacity': fillOpacity});
 };
 
 CreateEllipse.prototype.drag = function drag(dragX, dragY, shiftKey) {

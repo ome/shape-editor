@@ -57,9 +57,21 @@ $(function() {
         shapeManager.setStrokeColor(strokeColor);
     });
 
+    $("input[name='fillColor']").click(function(){
+        var fillColor = $(this).val();
+        var fillOpacity = $("select[name='fillOpacity']").val();
+        shapeManager.setFillColor(fillColor);
+        shapeManager.setFillOpacity(fillOpacity);
+    });
+
     $("select[name='strokeWidth']").change(function(){
         var strokeWidth = $(this).val();
         shapeManager.setStrokeWidth(strokeWidth);
+    });
+
+    $("select[name='fillOpacity']").change(function(){
+        var fillOpacity = $(this).val();
+        shapeManager.setFillOpacity(fillOpacity);
     });
 
     var updateZoom = function updateZoom() {
@@ -146,12 +158,21 @@ $(function() {
     $("#shapesCanvas").bind("change:selected", function(){
         var strokeColor = shapeManager.getStrokeColor();
         if (strokeColor) {
-          $("input[value='" + strokeColor + "']").prop('checked', 'checked');
+          $("input[name='strokeColor'][value='" + strokeColor + "']").prop('checked', 'checked');
         } else {
            $("input[name='strokeColor']").removeProp('checked');
         }
+        var fillColor = shapeManager.getFillColor();
+        if (fillColor) {
+          $("input[name='fillColor'][value='" + fillColor + "']").prop('checked', 'checked');
+        } else {
+           $("input[name='fillColor']").removeProp('checked');
+        }
         var strokeWidth = shapeManager.getStrokeWidth() || 1;
         $("select[name='strokeWidth']").val(strokeWidth);
+
+        var fillOpacity = shapeManager.getFillOpacity() || 0.01;
+        $("select[name='fillOpacity']").val(fillOpacity);
     });
 
     $("#shapesCanvas").bind("change:shape", function(event, shapes){

@@ -23,6 +23,7 @@ var Line = function Line(options) {
     this._y2 = options.y2;
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
+    this._area = Math.pow(Math.pow(this._x2 - this._x1, 2) + Math.pow(this._y2 - this._y1, 2), 0.5)*this._strokeWidth;
     this.handle_wh = 6;
     this._selected = false;
     this._zoomFraction = 1;
@@ -80,6 +81,7 @@ Line.prototype.toJson = function toJson() {
         'x2': this._x2,
         'y1': this._y1,
         'y2': this._y2,
+        'area': Math.pow(Math.pow(this._x2 - this._x1, 2) + Math.pow(this._y2 - this._y1, 2), 0.5)*this._strokeWidth,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -156,6 +158,7 @@ Line.prototype.getStrokeColor = function getStrokeColor() {
 
 Line.prototype.setStrokeWidth = function setStrokeWidth(strokeWidth) {
     this._strokeWidth = strokeWidth;
+    this._area = Math.abs((this._x2 - this._x1) * (this._y2 - this._y1))*this._strokeWidth;
     this.drawShape();
 };
 
@@ -216,7 +219,6 @@ Line.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -288,6 +290,7 @@ Line.prototype.createHandles = function createHandles() {
                     }
                 }
             }
+            self._area = Math.pow(Math.pow(self._x2 - self._x1, 2) + Math.pow(self._y2 - self._y1, 2), 0.5)*self._strokeWidth;
             self.drawShape();
             return false;
         };
@@ -452,6 +455,7 @@ CreateLine.prototype.startDrag = function startDrag(startX, startY) {
         'y1': startY,
         'x2': startX,
         'y2': startY,
+        'area': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
         'strokeColor': strokeColor});
@@ -474,6 +478,7 @@ CreateLine.prototype.drag = function drag(dragX, dragY, shiftKey) {
     }
 
     this.line.setCoords({'x2': dragX, 'y2': dragY});
+    self._area = Math.pow(Math.pow(dragX - self._x1, 2) + Math.pow(dragY - self._y1, 2), 0.5)*self._strokeWidth;
 };
 
 CreateLine.prototype.stopDrag = function stopDrag() {
@@ -510,6 +515,7 @@ var CreateArrow = function CreateArrow(options) {
             'y1': startY,
             'x2': startX,
             'y2': startY,
+            'area': 0,
             'strokeWidth': strokeWidth,
             'zoom': zoom,
             'strokeColor': strokeColor});
@@ -536,6 +542,13 @@ var Rect = function Rect(options) {
     this._y = options.y;
     this._width = options.width;
     this._height = options.height;
+
+    if(options.area){
+        this._area = options.area;
+    }else{
+        this._area = this._width * this._height
+    }
+
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
     this._selected = false;
@@ -595,6 +608,7 @@ Rect.prototype.toJson = function toJson() {
         'y': this._y,
         'width': this._width,
         'height': this._height,
+        'area': this._width * this._height,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -737,7 +751,6 @@ Rect.prototype.destroy = function destroy() {
 };
 
 Rect.prototype.drawShape = function drawShape() {
-
     var strokeColor = this._strokeColor,
         lineW = this._strokeWidth;
 
@@ -753,7 +766,6 @@ Rect.prototype.drawShape = function drawShape() {
                        'stroke-width': lineW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -859,6 +871,7 @@ Rect.prototype.createHandles = function createHandles() {
             self._y = newRect.y;
             self._width = newRect.width;
             self._height = newRect.height;
+            self._area = newRect.width * newRect.height
             self.drawShape();
             return false;
         };
@@ -932,6 +945,7 @@ CreateRect.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'width': 0,
         'height': 0,
+        'area': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
         'strokeColor': strokeColor});
@@ -963,7 +977,9 @@ CreateRect.prototype.drag = function drag(dragX, dragY, shiftKey) {
 
     this.rect.setCoords({'x': Math.min(dragX, this.startX),
                         'y': Math.min(dragY, this.startY),
-                        'width': Math.abs(dx), 'height': Math.abs(dy)});
+                        'width': Math.abs(dx), 
+                        'height': Math.abs(dy)});
+    this.rect._area = Math.abs(dx) * Math.abs(dy)
 };
 
 CreateRect.prototype.stopDrag = function stopDrag() {
@@ -1027,6 +1043,13 @@ var Ellipse = function Ellipse(options) {
     if (options.zoom) {
         this._zoomFraction = options.zoom / 100;
     }
+
+    if(options.area){
+        this._area = options.area;
+    }else{
+        this._area = this._radiusX * this._radiusY * Math.PI
+    }
+
     this.handle_wh = 6;
 
     this.element = this.paper.ellipse();
@@ -1086,6 +1109,7 @@ Ellipse.prototype.toJson = function toJson() {
         'y': this._y,
         'radiusX': this._radiusX,
         'radiusY': this._radiusY,
+        'area': this._radiusX * this._radiusY * Math.PI,
         'rotation': this._rotation,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
@@ -1282,7 +1306,7 @@ Ellipse.prototype.updateShapeFromHandles = function updateShapeFromHandles(resiz
         }
         this._radiusY = this._yxRatio * this._radiusX;
     }
-
+    this._area = this._radiusX * this._radiusY * Math.PI
     this.drawShape();
 };
 
@@ -1306,7 +1330,6 @@ Ellipse.prototype.drawShape = function drawShape() {
     this.element.transform('r'+ this._rotation);
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -1462,6 +1485,7 @@ CreateEllipse.prototype.startDrag = function startDrag(startX, startY) {
         'y': startY,
         'radiusX': 0,
         'radiusY': 0,
+        'area': 0,
         'rotation': 0,
         'strokeWidth': strokeWidth,
         'zoom': zoom,
@@ -1502,6 +1526,8 @@ var Polygon = function Polygon(options) {
         this._id = this.manager.getRandomId();
     }
     this._points = options.points;
+    this._bbox = this.getBBox(this._points);
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
@@ -1559,10 +1585,28 @@ var Polygon = function Polygon(options) {
     this.drawShape();
 };
 
+Polygon.prototype.getBBox = function getBBox(points){
+    var coords = points.split(" ");
+    var xCoords = [];
+    var yCoords = [];
+
+    coords.forEach(function(s){
+        var point = s.split(",")
+        xCoords.push(parseInt(point[0]))
+        yCoords.push(parseInt(point[1]))
+    });
+
+    return {'x1': Math.min(...xCoords),
+            'x2': Math.max(...xCoords),
+            'y1': Math.min(...yCoords),
+            'y2': Math.max(...yCoords)}
+}
+
 Polygon.prototype.toJson = function toJson() {
     var rv = {
         'type': "Polygon",
         'points': this._points,
+        'area': this._area,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -1695,6 +1739,20 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
     var coords = this._points.split(" ");
     coords[handleIndex] = x + "," + y;
     this._points = coords.join(" ");
+
+    if(x < this._bbox.x1){
+        this._bbox.x1 = x
+    }
+    if(x > this._bbox.x2){
+        this._bbox.x2 = x
+    }
+    if(y < this._bbox.y1){
+        this._bbox.y1 = y
+    }
+    if(y > this._bbox.y2){
+        this._bbox.y2 = y
+    }
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 };
 
 Polygon.prototype.drawShape = function drawShape() {
@@ -1710,7 +1768,6 @@ Polygon.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();
@@ -2175,6 +2232,7 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape, constrain
         }
     }
     this._shapes.push(newShape);
+    this.sortShape(this._shapes);
     return newShape;
 };
 
@@ -2201,6 +2259,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
+        options.area = s.radiusX * s.radiusY * Math.PI;
         newShape = new Ellipse(options);
     }
     else if (s.type === 'Rectangle') {
@@ -2208,6 +2267,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y = s.y;
         options.width = s.width;
         options.height = s.height;
+        options.area = s.width * s.height;
         newShape = new Rect(options);
     }
     else if (s.type === 'Line') {
@@ -2215,6 +2275,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Line(options);
     }
     else if (s.type === 'Arrow') {
@@ -2222,6 +2283,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Arrow(options);
     }
     else if (s.type === 'Polygon') {
@@ -2237,7 +2299,27 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
 // Add a shape object
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+    this.sortShape(this._shapes);
     this.$el.trigger("new:shape", [shape]);
+};
+
+ShapeManager.prototype.sortShape = function sortShape(shapes) {
+    shapes.sort(function(a, b) {
+        var x = a._area;
+        var y = b._area;
+        if(x == undefined){
+            x = Number.MAX_SAFE_INTEGER;
+        }
+        if(y == undefined){
+            y = Number.MAX_SAFE_INTEGER;
+        }
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    })
+
+    shapes.reverse().forEach(function(s){
+        s.element.toFront();
+    })
+    
 };
 
 ShapeManager.prototype.getShapes = function getShapes() {
@@ -2418,6 +2500,7 @@ ShapeManager.prototype.notifySelectedShapesChanged = function notifySelectedShap
 };
 
 ShapeManager.prototype.notifyShapesChanged = function notifyShapesChanged(shapes) {
+    this.sortShape(this._shapes);
     this.$el.trigger("change:shape", [shapes]);
 };
 

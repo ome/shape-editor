@@ -374,6 +374,7 @@ ShapeManager.prototype.addShapeJson = function addShapeJson(jsonShape, constrain
         }
     }
     this._shapes.push(newShape);
+    this.sortShape(this._shapes);
     return newShape;
 };
 
@@ -400,6 +401,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.radiusY = s.radiusY;
         options.rotation = s.rotation || 0;
         options.transform = s.transform;
+        options.area = s.radiusX * s.radiusY * Math.PI;
         newShape = new Ellipse(options);
     }
     else if (s.type === 'Rectangle') {
@@ -407,6 +409,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y = s.y;
         options.width = s.width;
         options.height = s.height;
+        options.area = s.width * s.height;
         newShape = new Rect(options);
     }
     else if (s.type === 'Line') {
@@ -414,6 +417,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Line(options);
     }
     else if (s.type === 'Arrow') {
@@ -421,6 +425,7 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
         options.y1 = s.y1;
         options.x2 = s.x2;
         options.y2 = s.y2;
+        options.area = Math.abs((s.x2 - s.x1) * (s.y2 - s.y1));
         newShape = new Arrow(options);
     }
     else if (s.type === 'Polygon') {
@@ -436,7 +441,27 @@ ShapeManager.prototype.createShapeJson = function createShapeJson(jsonShape) {
 // Add a shape object
 ShapeManager.prototype.addShape = function addShape(shape) {
     this._shapes.push(shape);
+    this.sortShape(this._shapes);
     this.$el.trigger("new:shape", [shape]);
+};
+
+ShapeManager.prototype.sortShape = function sortShape(shapes) {
+    shapes.sort(function(a, b) {
+        var x = a._area;
+        var y = b._area;
+        if(x == undefined){
+            x = Number.MAX_SAFE_INTEGER;
+        }
+        if(y == undefined){
+            y = Number.MAX_SAFE_INTEGER;
+        }
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    })
+
+    shapes.reverse().forEach(function(s){
+        s.element.toFront();
+    })
+    
 };
 
 ShapeManager.prototype.getShapes = function getShapes() {
@@ -617,6 +642,7 @@ ShapeManager.prototype.notifySelectedShapesChanged = function notifySelectedShap
 };
 
 ShapeManager.prototype.notifyShapesChanged = function notifyShapesChanged(shapes) {
+    this.sortShape(this._shapes);
     this.$el.trigger("change:shape", [shapes]);
 };
 

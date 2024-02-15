@@ -31,6 +31,8 @@ var Polygon = function Polygon(options) {
         this._id = this.manager.getRandomId();
     }
     this._points = options.points;
+    this._bbox = this.getBBox(this._points);
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 
     this._strokeColor = options.strokeColor;
     this._strokeWidth = options.strokeWidth || 2;
@@ -88,10 +90,28 @@ var Polygon = function Polygon(options) {
     this.drawShape();
 };
 
+Polygon.prototype.getBBox = function getBBox(points){
+    var coords = points.split(" ");
+    var xCoords = [];
+    var yCoords = [];
+
+    coords.forEach(function(s){
+        var point = s.split(",")
+        xCoords.push(parseInt(point[0]))
+        yCoords.push(parseInt(point[1]))
+    });
+
+    return {'x1': Math.min(...xCoords),
+            'x2': Math.max(...xCoords),
+            'y1': Math.min(...yCoords),
+            'y2': Math.max(...yCoords)}
+}
+
 Polygon.prototype.toJson = function toJson() {
     var rv = {
         'type': "Polygon",
         'points': this._points,
+        'area': this._area,
         'strokeWidth': this._strokeWidth,
         'strokeColor': this._strokeColor
     };
@@ -224,6 +244,20 @@ Polygon.prototype.updateHandle = function updateHandle(handleIndex, x, y, shiftK
     var coords = this._points.split(" ");
     coords[handleIndex] = x + "," + y;
     this._points = coords.join(" ");
+
+    if(x < this._bbox.x1){
+        this._bbox.x1 = x
+    }
+    if(x > this._bbox.x2){
+        this._bbox.x2 = x
+    }
+    if(y < this._bbox.y1){
+        this._bbox.y1 = y
+    }
+    if(y > this._bbox.y2){
+        this._bbox.y2 = y
+    }
+    this._area = Math.abs((this._bbox.x2 - this._bbox.x1) * (this._bbox.y2 - this._bbox.y1))
 };
 
 Polygon.prototype.drawShape = function drawShape() {
@@ -239,7 +273,6 @@ Polygon.prototype.drawShape = function drawShape() {
                        'stroke-width': strokeW});
 
     if (this.isSelected()) {
-        this.element.toFront();
         this.handles.show().toFront();
     } else {
         this.handles.hide();

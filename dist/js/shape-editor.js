@@ -2169,7 +2169,7 @@ ShapeManager.prototype.getFillOpacity = function getFillOpacity() {
 };
 
 ShapeManager.prototype.setFillOpacity = function setFillOpacity(fillOpacity) {
-    var fillOpacity = parseFloat(fillOpacity, 10);
+    fillOpacity = parseFloat(fillOpacity, 10);
     this._fillOpacity = fillOpacity;
     var selected = this.getSelectedShapes();
     for (var s=0; s<selected.length; s++) {

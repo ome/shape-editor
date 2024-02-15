@@ -158,13 +158,13 @@ $(function() {
     $("#shapesCanvas").bind("change:selected", function(){
         var strokeColor = shapeManager.getStrokeColor();
         if (strokeColor) {
-          $("input[value='" + strokeColor + "']").prop('checked', 'checked');
+          $("input[name='strokeColor'][value='" + strokeColor + "']").prop('checked', 'checked');
         } else {
            $("input[name='strokeColor']").removeProp('checked');
         }
         var fillColor = shapeManager.getFillColor();
         if (fillColor) {
-          $("input[value='" + fillColor + "']").prop('checked', 'checked');
+          $("input[name='fillColor'][value='" + fillColor + "']").prop('checked', 'checked');
         } else {
            $("input[name='fillColor']").removeProp('checked');
         }
